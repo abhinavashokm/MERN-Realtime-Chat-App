@@ -1,9 +1,19 @@
-import React from 'react'
+import React,{ useEffect } from 'react'
+import {useNavigate} from 'react-router-dom'
 import Contacts from '../../Components/Contacts/Contacts'
 import Chat from '../../Components/Chat/Chat'
 import './home.css'
 
-function home() {
+function Home({user}) {
+  const navigate = useNavigate()
+  useEffect(() => {
+    if(!user){
+      navigate('/login')
+    }else {
+      console.log(user)
+    }
+  })
+  
   return (
     <div className='home-container' >
         <Contacts/>
@@ -12,4 +22,4 @@ function home() {
   )
 }
 
-export default home
+export default Home

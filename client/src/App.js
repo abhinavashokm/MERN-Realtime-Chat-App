@@ -1,10 +1,13 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { io } from 'socket.io-client';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
-import Home from './Pages/Home/home'
+import Home from './Pages/Home/Home'
+import Login from './Components/Login/Login';
+import Signup from './Pages/Signup/Signup';
 import './App.css'
 
 function App() {
+  const [user, setUser] = useState(null)
   let socket = useRef(null)
   useEffect(() => {
     socket.current = io("http://localhost:3001")
@@ -14,7 +17,9 @@ function App() {
     <div className="App">
       <Router>
         <Routes>
-          <Route element={<Home/>} path="/" />
+          <Route element={<Home user={user}/>} path="/" />
+          <Route element={<Login/>} path="/login" />
+          <Route element={<Signup/>} path="/signup" />
         </Routes>
       </Router>
     </div>
