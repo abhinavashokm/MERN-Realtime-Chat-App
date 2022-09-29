@@ -10,6 +10,7 @@ mongoose.connect('mongodb://localhost:27017/ChatApp')
 const app = express()
 const httpServer = http.createServer(app)
 const io = new Server(httpServer, {
+    pingTimeout: 60000,
     cors: {
         origin: "http://localhost:3000",
     }
@@ -18,7 +19,11 @@ const io = new Server(httpServer, {
 //WHEN NEW CONNCTION ESTABLISED
 io.on("connection", (socket) => {
     console.log("new connection establised")
+    socket.on("disconnect", () => {
+        console.log("one user disconnceted");
+    });
 })
+
 
 //PORT LISTENING
 httpServer.listen(3001, () => {

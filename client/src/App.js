@@ -1,17 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import {io} from 'socket.io-client';
+import React, { useEffect, useState, useRef } from 'react';
+import { io } from 'socket.io-client';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
+import Home from './Pages/Home/home'
+import './App.css'
 
 function App() {
-const [socket, setSocket] = useState()
+  let socket = useRef(null)
   useEffect(() => {
-    setSocket(io("ws://localhost:3001"))
+    socket.current = io("http://localhost:3001")
   }, [])
-  
+
   return (
     <div className="App">
-      <h1>hello world</h1>
+      <Router>
+        <Routes>
+          <Route element={<Home/>} path="/" />
+        </Routes>
+      </Router>
     </div>
-  );
+  )
 }
 
 export default App;

@@ -1,0 +1,47 @@
+.contacts-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1.6;
+    height: 100%;
+    background-color: #fff;
+}
+
+.profileBand {
+    display: flex;
+    height: 60px;
+    background-color: #fff;
+    border-bottom: 1px solid aliceblue;
+}
+
+.profileBand span {
+    font-size: 28px;
+    margin: 10px 0 0 40px;
+}
+
+.profileBand img {
+    height: 50px;
+    margin: 5px;
+    border-radius: 50px;
+    margin-left: 7px;
+}
+
+.contact-list {
+    background: white;
+}
+
+.contact-item {
+    display: flex;
+    flex-direction: row;
+    border-bottom: 1px solid #f2f2f2;
+    width: 100%;
+    background: white;
+    cursor: pointer;
+    height: 60px;
+}
+
+.contactName {
+    font-size: 18px;
+    color: black;
+    margin: 5px 0 0 15px;
+
+}
