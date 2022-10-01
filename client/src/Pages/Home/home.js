@@ -1,10 +1,12 @@
-import React,{ useEffect } from 'react'
+import React,{ useEffect, useContext } from 'react'
 import {useNavigate} from 'react-router-dom'
 import Contacts from '../../Components/Contacts/Contacts'
 import Chat from '../../Components/Chat/Chat'
+import { userContext } from '../../Store/UserContext'
 import './home.css'
 
-function Home({user}) {
+function Home() {
+  const {user} = useContext(userContext)
   const navigate = useNavigate()
   useEffect(() => {
     if(!user){

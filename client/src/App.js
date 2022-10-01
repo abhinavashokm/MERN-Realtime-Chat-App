@@ -1,13 +1,15 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React,{ useEffect, useRef, useContext } from 'react';
 import { io } from 'socket.io-client';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import Home from './Pages/Home/Home'
 import Login from './Components/Login/Login';
 import Signup from './Pages/Signup/Signup';
+import {userContext} from './Store/UserContext';
 import './App.css'
 
 function App() {
-  const [user, setUser] = useState(null)
+  const {user} = useContext(userContext)
+
   let socket = useRef(null)
   useEffect(() => {
     socket.current = io("http://localhost:3001")
