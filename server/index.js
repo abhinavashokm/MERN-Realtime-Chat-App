@@ -42,25 +42,25 @@ const findUser = (userId) => {
 io.on("connection", (socket) => {
     console.log("new connection establised")
 
-//when disconnected
+    //when disconnected
     socket.on("disconnect", () => {
         removeUser(socket.id)
         console.log("one user disconnceted");
-        console.log(users.length +" users online")
+        console.log(users.length + " users online")
     })
 
-//add user to online list of users
-    socket.on("addUser" , (userId) => {
-        addUser(userId,socket.id)
-        io.to(socket.id).emit("onlineUsersList",users)
-        console.log(users.length +" users online")
+    //add user to online list of users
+    socket.on("addUser", (userId) => {
+        addUser(userId, socket.id)
+        io.to(socket.id).emit("onlineUsersList", users)
+        console.log(users.length + " users online")
     })
 
-//recieve private messages from sender and send it to the target user
-    socket.on("sendMessage",async({senderId,recieverId,msg}) => {
+    //recieve private messages from sender and send it to the target user
+    socket.on("sendMessage", async ({ senderId, recieverId, msg }) => {
         const recieverUser = await findUser(recieverId)
-        if(recieverUser){
-        io.to(recieverUser.socketId).emit("recieveMessage",{senderId,msg})
+        if (recieverUser) {
+            io.to(recieverUser.socketId).emit("recieveMessage", { senderId, msg, recieverId })
         }
     })
 
@@ -69,23 +69,23 @@ io.on("connection", (socket) => {
 //ROUTERS
 
 //manage login
-app.get('/getAllContacts',(req,res) => {
-    UserModel.find({},(err,data) => {
-        if(err) {
+app.get('/getAllContacts', (req, res) => {
+    UserModel.find({}, (err, data) => {
+        if (err) {
             res.json(false)
-        }else {
+        } else {
             res.json(data)
         }
     })
 })
-app.post('/userLogin', async ( req , res ) => {
-    const {UserName , Password} = req.body
-    UserModel.find({UserName},(err, user) => {
-        if(err) {
+app.post('/userLogin', async (req, res) => {
+    const { UserName, Password } = req.body
+    UserModel.find({ UserName }, (err, user) => {
+        if (err) {
             res.json(false)
         } else {
-            
-            if(user[0].Password != Password) {
+
+            if (user[0].Password != Password) {
                 res.json(false)
             } else {
                 res.json(user)
@@ -95,7 +95,7 @@ app.post('/userLogin', async ( req , res ) => {
 })
 
 //manage signup
-app.post('/createUser' , async ( req, res ) => {
+app.post('/createUser', async (req, res) => {
     const user = req.body
     const newUser = UserModel(user)
     console.log(newUser)

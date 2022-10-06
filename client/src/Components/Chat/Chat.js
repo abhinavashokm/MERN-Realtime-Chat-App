@@ -17,6 +17,7 @@ function Chat() {
   const [onlineStatus, setOnlineStatus] = useState(false)
   const [arrivalMessage, setArrivalMessage] = useState(null)
   const [conversations, setConversations] = useState([])
+  // const [allConversations, setAllConversations] = useState([])
 
   const { user } = useContext(userContext)
   const { currentChat } = useContext(currentChatContext)
@@ -38,7 +39,8 @@ function Chat() {
         setArrivalMessage({
           message: data.msg,
           senderId: data.senderId,
-          isYours : false
+          recieverId: data.recieverId,
+          isYours: false
         })
       })
     }
@@ -72,7 +74,8 @@ function Chat() {
     {
       message: message,
       senderId: user._id,
-      isYours : true
+      isYours: true,
+      recieverId: currentChat._id
     }
     ])
     setMessage('')
@@ -87,13 +90,19 @@ function Chat() {
       <div className="messages-container">
         {
           [...conversations].reverse().map((obj, index) => {
-            return (
-              <Mess key={index} isYours={obj.isYours}>
-                <div className="message">
-                  {obj.message}
-                </div>
-              </Mess>
-            )
+            //when message receiving we check senderId and current chating person's id is it same or not
+            //when message sending we check recieverId and current chating person's id is it same or not 
+            if (obj.senderId === currentChat._id || obj.recieverId === currentChat._id) {
+              return (
+                <Mess key={index} isYours={obj.isYours}>
+                  <div className="message">
+                    {obj.message}
+                  </div>
+                </Mess>
+              )
+            } else {
+              return (null)
+            }
           })
         }
       </div>
