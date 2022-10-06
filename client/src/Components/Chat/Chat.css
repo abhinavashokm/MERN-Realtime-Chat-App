@@ -38,6 +38,10 @@
     padding: 5px 10px;
 }
 
+.chatbox-container form {
+    width: 100%;
+}
+
 .chat-input {
     width: 100%;
     font-size: 15px;
@@ -47,7 +51,7 @@
 
 .messages-container {
     display: flex;
-    flex-direction: column;
+    flex-direction: column-reverse;
     height: 100%;
     background: #e5ddd6;
     overflow-y: scroll;

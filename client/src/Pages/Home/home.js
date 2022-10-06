@@ -11,8 +11,6 @@ function Home() {
   useEffect(() => {
     if(!user){
       navigate('/login')
-    }else {
-      console.log(user)
     }
   })
   
