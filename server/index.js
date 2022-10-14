@@ -2,6 +2,7 @@ const express = require('express')
 const http = require("http");
 const { Server } = require("socket.io");
 const UserModel = require('./Models/users')
+const ChatModel = require('./Models/chats')
 const cors = require('cors')
 
 // MONGODB CONNCETION
@@ -63,12 +64,11 @@ io.on("connection", (socket) => {
             io.to(recieverUser.socketId).emit("recieveMessage", { senderId, msg, recieverId })
         }
     })
-
 })
 
 //ROUTERS
 
-//manage login
+//fetching all contacts details
 app.get('/getAllContacts', (req, res) => {
     UserModel.find({}, (err, data) => {
         if (err) {
@@ -78,17 +78,48 @@ app.get('/getAllContacts', (req, res) => {
         }
     })
 })
+
+//retive all chat made by user
+app.post('/getChat', (req, res) => {
+    const body = req.body
+    ChatModel.find({ userId: body.userId }, (err, chat) => {
+        if (err) {
+            res.json(false)
+        } else {
+            res.json(chat)
+        }
+    })
+})
+
+//update chat when new chats are created
+app.post('/updateChat', (req, res) => {
+    const data = req.body
+    console.log(data)
+    console.log(data.userId)
+    ChatModel.findOneAndUpdate({ userId: data.userId }, { $push: { chats: data.chats } },
+        ((err, success) => {
+            if (err) {
+                console.log(err)
+            } else {
+                console.log("success")
+                res.json("success")
+            }
+        }))
+})
+
+//manage login
 app.post('/userLogin', async (req, res) => {
     const { UserName, Password } = req.body
     UserModel.find({ UserName }, (err, user) => {
         if (err) {
             res.json(false)
         } else {
-
-            if (user[0].Password != Password) {
-                res.json(false)
-            } else {
-                res.json(user)
+            if (user.length > 0) {
+                if (user[0].Password != Password) {
+                    res.json(false)
+                } else {
+                    res.json(user)
+                }
             }
         }
     })
@@ -98,8 +129,14 @@ app.post('/userLogin', async (req, res) => {
 app.post('/createUser', async (req, res) => {
     const user = req.body
     const newUser = UserModel(user)
-    console.log(newUser)
+    const userId = newUser._id
     await newUser.save()
+    const chatDocument = {
+        userId: userId,
+        chats: []
+    }
+    const emptyChat = ChatModel(chatDocument)
+    await emptyChat.save()
     res.json()
 })
 

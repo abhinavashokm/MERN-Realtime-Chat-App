@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import { io } from 'socket.io-client';
 import { userContext } from '../../Store/UserContext';
 import { currentChatContext } from '../../Store/CurrentChat';
+import axios from 'axios';
 
 const Mess = styled.div`
 display: flex;
@@ -12,12 +13,18 @@ justify-content: ${props => props.isYours ? "flex-end" : "flex-start"} ;
 `
 
 function Chat() {
+  //for getting text from input box
   const [message, setMessage] = useState("")
+  //list of persons are currently online
   const [onlineList, setOnlineList] = useState({})
+  //online status of current chat person
   const [onlineStatus, setOnlineStatus] = useState(false)
+  //state for store arrivalMessage
   const [arrivalMessage, setArrivalMessage] = useState(null)
-  const [conversations, setConversations] = useState([])
-  // const [allConversations, setAllConversations] = useState([])
+  //state for store sendingMessage
+  const [sendingMessage, setSendingMessage] = useState(null)
+  //store all chats made by user
+  const [chats, setChats] = useState([])
 
   const { user } = useContext(userContext)
   const { currentChat } = useContext(currentChatContext)
@@ -46,10 +53,31 @@ function Chat() {
     }
   }, [user, arrivalMessage, currentChat])
 
-  //// action on new arrivalmessage
+  //get all chats made by user
+  const getChats = () => {
+    if (user) {
+      axios.post("http://localhost:3001/getChat", { userId: user._id }).then((res) => {
+        const data = res.data[0]
+        console.log(data.chats)
+        setChats(data.chats)
+      })
+    }
+  }
   useEffect(() => {
-    arrivalMessage && setConversations(c => [...c, arrivalMessage])
-  }, [arrivalMessage])
+    user && getChats(user)
+  }, [user])
+
+
+
+  // action on new arrivalmessage
+  useEffect(() => {
+    //add arrivalmessage to converstations list
+    arrivalMessage && setChats(c => [...c, arrivalMessage])
+    //update new messages to database
+    arrivalMessage && axios.post("http://localhost:3001/updateChat", { userId: user._id, chats: arrivalMessage }).then((res) => {
+      setArrivalMessage(null)
+    })
+  }, [arrivalMessage, user])
 
   //for setting current chatting persons online status
   useEffect(() => {
@@ -70,16 +98,24 @@ function Chat() {
       recieverId: currentChat._id,
       msg: message
     })
-    setConversations(c => [...c,
-    {
+    const messageObj = {
       message: message,
       senderId: user._id,
       isYours: true,
       recieverId: currentChat._id
     }
-    ])
+    setChats(c => [...c,messageObj])
+    setSendingMessage(messageObj)
     setMessage('')
   }
+
+  //for sending message upload to database
+  useEffect(() => {
+    //update new messages to database
+    sendingMessage && axios.post("http://localhost:3001/updateChat", { userId: user._id, chats: sendingMessage }).then((res) => {
+      setSendingMessage(null)
+    })
+  }, [sendingMessage, user])
 
   return (
     <div className='chat-container'>
@@ -89,19 +125,21 @@ function Chat() {
       </div>
       <div className="messages-container">
         {
-          [...conversations].reverse().map((obj, index) => {
+          [...chats].reverse().map((obj, index) => {
             //when message receiving we check senderId and current chating person's id is it same or not
             //when message sending we check recieverId and current chating person's id is it same or not 
-            if (obj.senderId === currentChat._id || obj.recieverId === currentChat._id) {
-              return (
-                <Mess key={index} isYours={obj.isYours}>
-                  <div className="message">
-                    {obj.message}
-                  </div>
-                </Mess>
-              )
-            } else {
-              return (null)
+            if (currentChat) {
+              if (obj.senderId === currentChat._id || obj.recieverId === currentChat._id) {
+                return (
+                  <Mess key={index} isYours={obj.isYours}>
+                    <div className="message">
+                      {obj.message}
+                    </div>
+                  </Mess>
+                )
+              } else {
+                return (null)
+              }
             }
           })
         }
