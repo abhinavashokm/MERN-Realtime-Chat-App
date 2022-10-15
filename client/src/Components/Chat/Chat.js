@@ -12,12 +12,16 @@ justify-content: ${props => props.isYours ? "flex-end" : "flex-start"} ;
 `
 
 function Chat() {
+  //state for store input box data
   const [message, setMessage] = useState("")
+  //list of users currently online
   const [onlineList, setOnlineList] = useState({})
+  //online status of current chatting person
   const [onlineStatus, setOnlineStatus] = useState(false)
+  //state for store latest arrival message
   const [arrivalMessage, setArrivalMessage] = useState(null)
+  //state for store live chat
   const [conversations, setConversations] = useState([])
-  // const [allConversations, setAllConversations] = useState([])
 
   const { user } = useContext(userContext)
   const { currentChat } = useContext(currentChatContext)

@@ -68,7 +68,7 @@ io.on("connection", (socket) => {
 
 //ROUTERS
 
-//manage login
+//for fetching all contacts in the database
 app.get('/getAllContacts', (req, res) => {
     UserModel.find({}, (err, data) => {
         if (err) {
@@ -78,6 +78,7 @@ app.get('/getAllContacts', (req, res) => {
         }
     })
 })
+//manage login
 app.post('/userLogin', async (req, res) => {
     const { UserName, Password } = req.body
     UserModel.find({ UserName }, (err, user) => {
