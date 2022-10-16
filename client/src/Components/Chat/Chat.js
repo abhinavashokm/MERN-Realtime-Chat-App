@@ -4,7 +4,6 @@ import styled from 'styled-components'
 import { io } from 'socket.io-client';
 import { userContext } from '../../Store/UserContext';
 import { currentChatContext } from '../../Store/CurrentChat';
-import axios from 'axios';
 
 const Mess = styled.div`
 display: flex;
@@ -13,17 +12,16 @@ justify-content: ${props => props.isYours ? "flex-end" : "flex-start"} ;
 `
 
 function Chat() {
-  //for getting text from input box
+
+  //state for store input box data
   const [message, setMessage] = useState("")
-  //list of persons are currently online
+  //list of users currently online
   const [onlineList, setOnlineList] = useState({})
-  //online status of current chat person
+  //online status of current chatting person
   const [onlineStatus, setOnlineStatus] = useState(false)
-  //state for store arrivalMessage
+  //state for store latest arrival message
   const [arrivalMessage, setArrivalMessage] = useState(null)
-  //state for store sendingMessage
-  const [sendingMessage, setSendingMessage] = useState(null)
-  //store all chats made by user
+  //state for store live chat
   const [chats, setChats] = useState([])
 
   const { user } = useContext(userContext)
@@ -53,30 +51,10 @@ function Chat() {
     }
   }, [user, arrivalMessage, currentChat])
 
-  //get all chats made by user
-  const getChats = () => {
-    if (user) {
-      axios.post("http://localhost:3001/getChat", { userId: user._id }).then((res) => {
-        const data = res.data[0]
-        console.log(data.chats)
-        setChats(data.chats)
-      })
-    }
-  }
-  useEffect(() => {
-    user && getChats(user)
-  }, [user])
-
-
-
   // action on new arrivalmessage
   useEffect(() => {
     //add arrivalmessage to converstations list
     arrivalMessage && setChats(c => [...c, arrivalMessage])
-    //update new messages to database
-    arrivalMessage && axios.post("http://localhost:3001/updateChat", { userId: user._id, chats: arrivalMessage }).then((res) => {
-      setArrivalMessage(null)
-    })
   }, [arrivalMessage, user])
 
   //for setting current chatting persons online status
@@ -105,17 +83,8 @@ function Chat() {
       recieverId: currentChat._id
     }
     setChats(c => [...c,messageObj])
-    setSendingMessage(messageObj)
     setMessage('')
   }
-
-  //for sending message upload to database
-  useEffect(() => {
-    //update new messages to database
-    sendingMessage && axios.post("http://localhost:3001/updateChat", { userId: user._id, chats: sendingMessage }).then((res) => {
-      setSendingMessage(null)
-    })
-  }, [sendingMessage, user])
 
   return (
     <div className='chat-container'>

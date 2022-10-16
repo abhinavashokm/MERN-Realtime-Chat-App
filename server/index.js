@@ -2,7 +2,6 @@ const express = require('express')
 const http = require("http");
 const { Server } = require("socket.io");
 const UserModel = require('./Models/users')
-const ChatModel = require('./Models/chats')
 const cors = require('cors')
 
 // MONGODB CONNCETION
@@ -68,7 +67,8 @@ io.on("connection", (socket) => {
 
 //ROUTERS
 
-//fetching all contacts details
+
+//for fetching all contacts in the database
 app.get('/getAllContacts', (req, res) => {
     UserModel.find({}, (err, data) => {
         if (err) {
@@ -77,34 +77,6 @@ app.get('/getAllContacts', (req, res) => {
             res.json(data)
         }
     })
-})
-
-//retive all chat made by user
-app.post('/getChat', (req, res) => {
-    const body = req.body
-    ChatModel.find({ userId: body.userId }, (err, chat) => {
-        if (err) {
-            res.json(false)
-        } else {
-            res.json(chat)
-        }
-    })
-})
-
-//update chat when new chats are created
-app.post('/updateChat', (req, res) => {
-    const data = req.body
-    console.log(data)
-    console.log(data.userId)
-    ChatModel.findOneAndUpdate({ userId: data.userId }, { $push: { chats: data.chats } },
-        ((err, success) => {
-            if (err) {
-                console.log(err)
-            } else {
-                console.log("success")
-                res.json("success")
-            }
-        }))
 })
 
 //manage login
@@ -131,12 +103,6 @@ app.post('/createUser', async (req, res) => {
     const newUser = UserModel(user)
     const userId = newUser._id
     await newUser.save()
-    const chatDocument = {
-        userId: userId,
-        chats: []
-    }
-    const emptyChat = ChatModel(chatDocument)
-    await emptyChat.save()
     res.json()
 })
 
