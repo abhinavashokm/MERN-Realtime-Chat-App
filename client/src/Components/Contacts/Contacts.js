@@ -3,13 +3,15 @@ import './Contacts.css'
 import axios from 'axios'
 import { userContext } from '../../Store/UserContext'
 import { currentChatContext } from '../../Store/CurrentChat'
+import { confirmAlert } from 'react-confirm-alert'; // Import alert npm
+import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css for alert
 
 
 function Contacts() {
 
-  const { user } = useContext(userContext)
+  const { user, setUser } = useContext(userContext)
   const { setCurrentChat } = useContext(currentChatContext)
-  
+
   const [contactsList, setContactsList] = useState([])
 
   useEffect(() => {
@@ -25,12 +27,34 @@ function Contacts() {
     })
   }, [user])
 
+  //fuction for signout current user
+  const logoutUser = () => {
+    confirmAlert({
+      title: 'Logout',
+      message: 'Are you sure want to logout,all chats you made will lost!',
+      buttons: [
+        {
+          label: 'Yes',
+          onClick: () => {
+            setCurrentChat(null)
+            setUser(null)
+          }
+        },
+        {
+          label: 'No',
+          onClick: () => {}
+        }
+      ]
+    })
+  }
+
 
   return (
     <div className='contacts-container'>
       <div className="profileBand">
         <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRA7ECizMinUV4oPQG6BUFIZZmeXehbj7pytQ&usqp=CAU" alt="person" />
         {user && <span>{user.FullName}</span>}
+        <button onClick={logoutUser} >Logout</button>
       </div>
       <div className='contact-list'>
         {
@@ -38,7 +62,7 @@ function Contacts() {
             return (
               <div onClick={() => {
                 setCurrentChat(contact)
-                
+
               }} key={index} className="contact-item">
 
                 <span className='contactName'>{contact.FullName}</span>

@@ -63,10 +63,10 @@ io.on("connection", (socket) => {
             io.to(recieverUser.socketId).emit("recieveMessage", { senderId, msg, recieverId })
         }
     })
+    
 })
 
 //ROUTERS
-
 
 //for fetching all contacts in the database
 app.get('/getAllContacts', (req, res) => {

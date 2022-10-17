@@ -82,7 +82,7 @@ function Chat() {
       isYours: true,
       recieverId: currentChat._id
     }
-    setChats(c => [...c,messageObj])
+    setChats(c => [...c, messageObj])
     setMessage('')
   }
 
@@ -94,23 +94,19 @@ function Chat() {
       </div>
       <div className="messages-container">
         {
-          [...chats].reverse().map((obj, index) => {
-            //when message receiving we check senderId and current chating person's id is it same or not
-            //when message sending we check recieverId and current chating person's id is it same or not 
-            if (currentChat) {
-              if (obj.senderId === currentChat._id || obj.recieverId === currentChat._id) {
-                return (
-                  <Mess key={index} isYours={obj.isYours}>
-                    <div className="message">
-                      {obj.message}
-                    </div>
-                  </Mess>
-                )
-              } else {
-                return (null)
-              }
-            }
-          })
+          //on filter we check
+          //is it recieved message by matching senderId and current chatting person's id 
+          //or check is it sended message by matching recieverId and current chating person's id 
+          currentChat && [...chats].reverse().filter(message => message.senderId === currentChat._id || message.recieverId === currentChat._id)
+            .map((obj, index) => {
+              return (
+                <Mess key={index} isYours={obj.isYours}>
+                  <div className="message">
+                    {obj.message}
+                  </div>
+                </Mess>
+              )
+            })
         }
       </div>
       <div className="chatBox">
