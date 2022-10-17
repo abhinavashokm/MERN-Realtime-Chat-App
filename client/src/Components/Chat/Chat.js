@@ -5,6 +5,7 @@ import { io } from 'socket.io-client';
 import { userContext } from '../../Store/UserContext';
 import { currentChatContext } from '../../Store/CurrentChat';
 
+
 const Mess = styled.div`
 display: flex;
 margin: 5px 15px;
@@ -24,10 +25,10 @@ function Chat() {
   //state for store live chat
   const [chats, setChats] = useState([])
 
-  const { user } = useContext(userContext)
+  const { user, socket } = useContext(userContext)
   const { currentChat } = useContext(currentChatContext)
 
-  let socket = useRef(null)
+  //let socket = useRef(null)
 
   useEffect(() => {
     if (user) {

@@ -27,33 +27,53 @@ let users = []
 
 //helper fuctions
 const addUser = (userId, socketId) => {
-    !users.some(user => user.userId === userId) &&
+    let userContain = users.some(user => user.userId === userId)
+    if (!userContain) {
         users.push({ userId, socketId })
+        console.log("new user logined")
+        console.log(users.length + " users online")
+    }
 }
 
 const removeUser = (socketId) => {
-    users = users.filter(user => user.socketId !== socketId)
+    let userContain = users.some(user => user.socketId === socketId)
+    if (userContain) {
+        users = users.filter(user => user.socketId !== socketId)
+        console.log("one user disconnected");
+        console.log(users.length + " users online")
+    }
 }
+
+const removeUserManually = (userId) => {
+    let userContain = users.some(user => user.userId === userId)
+    if (userContain) {
+        users = users.filter(user => user.userId !== userId)
+        console.log("one user disconnected");
+        console.log(users.length + " users online")
+    }
+}
+
 const findUser = (userId) => {
     return users.find(user => user.userId === userId)
 }
 
 //WHEN NEW CONNCTION ESTABLISED
 io.on("connection", (socket) => {
-    console.log("new connection establised")
-
-    //when disconnected
-    socket.on("disconnect", () => {
-        removeUser(socket.id)
-        console.log("one user disconnceted");
-        console.log(users.length + " users online")
-    })
 
     //add user to online list of users
     socket.on("addUser", (userId) => {
         addUser(userId, socket.id)
         io.to(socket.id).emit("onlineUsersList", users)
-        console.log(users.length + " users online")
+    })
+
+    //when disconnected
+    socket.on("disconnect", () => {
+        removeUser(socket.id)
+    })
+
+    //remove user from online list when user manually logout 
+    socket.on("removeUser", ({ userId }) => {
+        removeUserManually(userId)
     })
 
     //recieve private messages from sender and send it to the target user
@@ -63,7 +83,7 @@ io.on("connection", (socket) => {
             io.to(recieverUser.socketId).emit("recieveMessage", { senderId, msg, recieverId })
         }
     })
-    
+
 })
 
 //ROUTERS

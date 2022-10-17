@@ -9,7 +9,7 @@ import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css for aler
 
 function Contacts() {
 
-  const { user, setUser } = useContext(userContext)
+  const { user, setUser, socket } = useContext(userContext)
   const { setCurrentChat } = useContext(currentChatContext)
 
   const [contactsList, setContactsList] = useState([])
@@ -37,6 +37,7 @@ function Contacts() {
           label: 'Yes',
           onClick: () => {
             setCurrentChat(null)
+            socket.current.emit("removeUser",{userId:user._id})
             setUser(null)
           }
         },
