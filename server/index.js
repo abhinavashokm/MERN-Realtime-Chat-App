@@ -3,6 +3,8 @@ const http = require("http");
 const { Server } = require("socket.io");
 const UserModel = require('./Models/users')
 const cors = require('cors')
+const bcrypt = require('bcrypt');
+
 
 // MONGODB CONNCETION
 const mongoose = require('mongoose')
@@ -107,23 +109,35 @@ app.post('/userLogin', async (req, res) => {
             res.json(false)
         } else {
             if (user.length > 0) {
-                if (user[0].Password != Password) {
-                    res.json(false)
-                } else {
-                    res.json(user)
-                }
+                bcrypt.compare(Password, user[0].Password, function (err, result) {
+                    if (err) {
+                        res.json(false)
+                    } else if (!result) {
+                        res.json(false)
+                    } else {
+                        res.json(user)
+                    }
+                })
             }
         }
     })
 })
 
 //manage signup
-app.post('/createUser', async (req, res) => {
+app.post('/createUser', (req, res) => {
     const user = req.body
-    const newUser = UserModel(user)
-    const userId = newUser._id
-    await newUser.save()
-    res.json()
+    const saltRounds = 10
+    //hash key of the password will store in database
+    bcrypt.hash(user.Password, saltRounds, async function (err, hash) {
+        if (err) {
+            res.json()
+        } else {
+            user.Password = hash
+            const newUser = UserModel(user)
+            await newUser.save()
+            res.json()
+        }
+    });
 })
 
 //PORT LISTENING

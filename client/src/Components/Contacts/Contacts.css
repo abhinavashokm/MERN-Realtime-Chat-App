@@ -43,6 +43,10 @@
     background: white;
 }
 
+.contact-list :hover {
+    background-color: #c9c6c6;
+}
+
 .contact-item {
     display: flex;
     flex-direction: row;
@@ -52,11 +56,6 @@
     cursor: pointer;
     height: 60px;
     cursor: pointer;
-}
-
-.contact-item :hover {
-    background-color: #c9c6c6;
-    /* background-color: #c9c6c6; */
 }
 
 .contactName {
