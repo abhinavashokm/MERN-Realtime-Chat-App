@@ -59,6 +59,11 @@ const findUser = (userId) => {
     return users.find(user => user.userId === userId)
 }
 
+//every time online userList modified the list will be updated in to all client side users
+const usersChangeListener = () => {
+    io.emit("usersChange", users)
+}
+
 //WHEN NEW CONNCTION ESTABLISED
 io.on("connection", (socket) => {
 
@@ -66,16 +71,19 @@ io.on("connection", (socket) => {
     socket.on("addUser", (userId) => {
         addUser(userId, socket.id)
         io.to(socket.id).emit("onlineUsersList", users)
+        usersChangeListener()
     })
 
     //when disconnected
     socket.on("disconnect", () => {
         removeUser(socket.id)
+        usersChangeListener()
     })
 
     //remove user from online list when user manually logout 
     socket.on("removeUser", ({ userId }) => {
         removeUserManually(userId)
+        usersChangeListener()
     })
 
     //recieve private messages from sender and send it to the target user

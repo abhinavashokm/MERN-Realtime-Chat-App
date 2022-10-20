@@ -40,6 +40,11 @@ function Chat() {
     }
   }, [user, arrivalMessage, currentChat])
 
+  //update online users list
+  socket.current && socket.current.on("usersChange", (users) => {
+    setOnlineList(users)
+  })
+
   // action on new arrivalmessage
   useEffect(() => {
     //add arrivalmessage to converstations list

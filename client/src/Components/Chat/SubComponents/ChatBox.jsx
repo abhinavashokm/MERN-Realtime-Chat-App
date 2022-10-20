@@ -36,8 +36,8 @@ function ChatBox({ props }) {
     return (
         <div className='chat-container' >
             <div className="chat-header">
-                {currentChat && <span>{currentChat.FullName}</span>}
-                <span>{onlineStatus ? "Online" : "offline"}</span>
+                {currentChat && <span className='person-name'>{currentChat.FullName}</span>}
+                <span className= {onlineStatus ? 'status-online' : 'status-offline'} >{onlineStatus ? "Online" : "offline"}</span>
             </div>
             <div className="messages-container">
                 {

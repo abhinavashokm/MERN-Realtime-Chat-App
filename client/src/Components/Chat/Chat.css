@@ -21,9 +21,23 @@
     background-color: #00b3b7;
 }
 
-.chat-header span {
+.chat-header .person-name {
     font-size: 23px;
-    margin: 15px 0 0 30px;
+    margin: 15px 0 10px 30px;
+}
+
+.chat-header .status-online {
+    font-size: 18px;
+    margin: 18px 0 0 30px;
+    color: #3DFF2E;
+    letter-spacing: 1px;
+}
+
+.chat-header .status-offline {
+    font-size: 18px;
+    margin: 18px 0 0 30px;
+    color: #F00;
+    letter-spacing: 1.5px;
 }
 
 .chatBox {
@@ -92,9 +106,10 @@
 .startChat-div {
     display: flex;
     background-color: #4ae2fb;
-    width: 230px;
-    height: 26px;
+    width: 260px;
+    height: 30px;
     border-radius: 50px;
     justify-content: center;
     align-items: center;
+    font-size: 15px;
 }
