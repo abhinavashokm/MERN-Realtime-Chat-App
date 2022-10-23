@@ -3,6 +3,7 @@ import "./Chat.css"
 import { io } from 'socket.io-client';
 import { userContext } from '../../Store/UserContext';
 import { currentChatContext } from '../../Store/CurrentChat';
+import { unreadMessagesContext } from '../../Store/UnreadMessages';
 import ChatBox from './SubComponents/ChatBox';
 import StartAChat from './SubComponents/StartAChat';
 
@@ -10,6 +11,7 @@ function Chat() {
 
   const { user, socket } = useContext(userContext)
   const { currentChat } = useContext(currentChatContext)
+  const { setUnreadMessages } = useContext(unreadMessagesContext)
 
   //list of users currently online
   const [onlineList, setOnlineList] = useState()
@@ -48,8 +50,13 @@ function Chat() {
   // action on new arrivalmessage
   useEffect(() => {
     //add arrivalmessage to converstations list
-    arrivalMessage && setChats(c => [...c, arrivalMessage])
+    if(arrivalMessage) {
+    setChats(c => [...c, arrivalMessage]) 
+    setUnreadMessages(d => [...d, arrivalMessage])
+    setArrivalMessage(null)
+    }
   }, [arrivalMessage, user])
+
 
   //this fucnction for sending private message
   const handleMessageSubmit = ({message, setMessage}) => {

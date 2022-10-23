@@ -3,6 +3,7 @@ import './Contacts.css'
 import axios from 'axios'
 import { userContext } from '../../Store/UserContext'
 import { currentChatContext } from '../../Store/CurrentChat'
+import { unreadMessagesContext } from '../../Store/UnreadMessages'
 import { confirmAlert } from 'react-confirm-alert'; // Import alert npm
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css for alert
 
@@ -11,6 +12,8 @@ function Contacts() {
 
   const { user, setUser, socket } = useContext(userContext)
   const { setCurrentChat } = useContext(currentChatContext)
+  const { unreadMessages } = useContext(unreadMessagesContext)
+
 
   const [contactsList, setContactsList] = useState([])
 
@@ -37,18 +40,19 @@ function Contacts() {
           label: 'Yes',
           onClick: () => {
             setCurrentChat(null)
-            socket.current.emit("removeUser",{userId:user._id})
+            socket.current.emit("removeUser", { userId: user._id })
             setUser(null)
           }
         },
         {
           label: 'No',
-          onClick: () => {}
+          onClick: () => { }
         }
       ]
     })
   }
 
+  let newMessage = false
 
   return (
     <div className='contacts-container'>
@@ -60,6 +64,11 @@ function Contacts() {
       <div className='contact-list'>
         {
           contactsList.map((contact, index) => {
+            if (unreadMessages.some(obj => obj.senderId === contact._id)) {
+              newMessage = true
+            } else {
+              newMessage = false
+            }
             return (
               <div onClick={() => {
                 setCurrentChat(contact)
@@ -67,6 +76,11 @@ function Contacts() {
               }} key={index} className="contact-item">
 
                 <span className='contactName'>{contact.FullName}</span>
+                {
+                  newMessage && <div className='unreadMessages-badge' >
+                    <span>new</span>
+                  </div>
+                }
               </div>
             )
           })

@@ -64,3 +64,18 @@
     margin: 5px 0 0 15px;
 
 }
+
+.unreadMessages-badge {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #65bf58;
+    color: white;
+    margin: auto 20px auto auto;
+    border-radius: 65px;
+    width: 40px;
+    height: 24px;
+    font-size: 14px;
+    pointer-events: none;
+}
+
