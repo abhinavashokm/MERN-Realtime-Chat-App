@@ -49,10 +49,14 @@ function Chat() {
 
   // action on new arrivalmessage
   useEffect(() => {
-    //add arrivalmessage to converstations list
     if(arrivalMessage) {
+    //add arrivalmessage to converstations list
     setChats(c => [...c, arrivalMessage]) 
-    setUnreadMessages(d => [...d, arrivalMessage])
+    //add the new message to unreadMessages list if the message not from current chating person
+    if(!currentChat || arrivalMessage.senderId !== currentChat._id) {
+      setUnreadMessages(d => [...d, arrivalMessage])
+    }
+    //after adding arrival message to chat array arrivalMessage variable will be reset to null
     setArrivalMessage(null)
     }
   }, [arrivalMessage, user])

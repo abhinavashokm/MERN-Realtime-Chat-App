@@ -37,9 +37,9 @@ function ChatBox({ props }) {
     
     let filter = null
 
+    //remove unread message when user read it
     useEffect(() => {
         if(filter) {
-            console.log('evidekk ethi')
             setUnreadMessages(filter)
         }
     }, [filter,setUnreadMessages,currentChat])
