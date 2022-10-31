@@ -55,7 +55,7 @@
     background-color: white;
     width: 100%;
     border-radius: 16px;
-    padding: 5px 10px;
+    padding: 7px 10px 8px 8px;
 }
 
 .chatbox-container form {
@@ -89,6 +89,8 @@
     background: #daf8cb;
     color: #303030;
     padding: 8px 10px;
+    border-radius: 5px;
+    word-break: break-all;
 }
 
 /* EMPTY CHAT COMPONENT CSS */
@@ -116,4 +118,12 @@
 
 .newMessage-false {
     display: none;
+}
+
+.sended-time {
+    display: flex;
+    justify-content: flex-end;
+    color: #83a7a5;
+    margin: 4px -6px -4px 12px;
+    font-size: 11px;
 }

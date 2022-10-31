@@ -20,6 +20,9 @@ function Chat() {
   //state for store live chat
   const [chats, setChats] = useState([])
 
+  //date object
+  var date = new Date()
+
   useEffect(() => {
     if (user) {
       // make connection to socket.io
@@ -36,7 +39,8 @@ function Chat() {
           message: data.msg,
           senderId: data.senderId,
           recieverId: data.recieverId,
-          isYours: false
+          isYours: false,
+          time: data.time
         })
       })
     }
@@ -59,24 +63,28 @@ function Chat() {
     //after adding arrival message to chat array arrivalMessage variable will be reset to null
     setArrivalMessage(null)
     }
-  }, [arrivalMessage, user])
+  }, [arrivalMessage])
 
 
   //this fucnction for sending private message
   const handleMessageSubmit = ({message, setMessage}) => {
+    //taking current time in hours and minute format
+    var currentHoursAndMinutes = date.getHours() + ':' + date.getMinutes();
     if (!currentChat) {
       return false
     }
     socket.current.emit("sendMessage", {
       senderId: user._id,
       recieverId: currentChat._id,
-      msg: message
+      msg: message,
+      time: currentHoursAndMinutes
     })
     const messageObj = {
       message: message,
       senderId: user._id,
       isYours: true,
-      recieverId: currentChat._id
+      recieverId: currentChat._id,
+      time: currentHoursAndMinutes
     }
     setChats(c => [...c, messageObj])
     setMessage('')

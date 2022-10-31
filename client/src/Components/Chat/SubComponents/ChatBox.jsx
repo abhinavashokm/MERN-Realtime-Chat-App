@@ -20,7 +20,7 @@ function ChatBox({ props }) {
     const [onlineStatus, setOnlineStatus] = useState(false)
 
     const { currentChat } = useContext(currentChatContext)
-    const { unreadMessages ,setUnreadMessages } = useContext(unreadMessagesContext)
+    const { unreadMessages, setUnreadMessages } = useContext(unreadMessagesContext)
 
     //for setting current chatting persons online status
     useEffect(() => {
@@ -34,16 +34,16 @@ function ChatBox({ props }) {
         e.preventDefault()
         handleMessageSubmit({ message, setMessage })
     }
-    
-    let filter = null
+
+    let filteredUnreadMessage = null
 
     //remove unread message when user read it
     useEffect(() => {
-        if(filter) {
-            setUnreadMessages(filter)
+        if (filteredUnreadMessage) {
+            setUnreadMessages(filteredUnreadMessage)
         }
-    }, [filter,setUnreadMessages,currentChat])
-    
+    }, [filteredUnreadMessage, setUnreadMessages, currentChat])
+
 
     return (
         <div className='chat-container' >
@@ -58,15 +58,16 @@ function ChatBox({ props }) {
                     //or check is it sended message by matching recieverId and current chating person's id 
                     currentChat && [...chats].reverse().filter(message => message.senderId === currentChat._id || message.recieverId === currentChat._id)
                         .map((obj, index) => {
-                          if(unreadMessages.some(message => message.senderId === obj.senderId)) {
-                            filter = unreadMessages.filter(message => message.senderId !== obj.senderId)
-                          }
-                            return (     
+                            if (unreadMessages.some(message => message.senderId === obj.senderId)) {
+                                filteredUnreadMessage = unreadMessages.filter(message => message.senderId !== obj.senderId)
+                            }
+                            return (
                                 <Mess key={index} isYours={obj.isYours}>
                                     <div className="message">
-                                        {obj.message}
+                                        <span>{obj.message}</span>
+                                        <span className='sended-time' >{obj.time}</span>
                                     </div>
-                                </Mess>   
+                                </Mess>
                             )
                         })
                 }
