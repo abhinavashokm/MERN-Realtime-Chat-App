@@ -6,7 +6,7 @@ const cors = require('cors')
 const bcrypt = require('bcrypt');
 
 
-// MONGODB CONNCETION
+//MONGODB CONNCETION
 const mongoose = require('mongoose')
 mongoose.connect('mongodb://localhost:27017/ChatApp')
 
@@ -20,14 +20,14 @@ const io = new Server(httpServer, {
     }
 })
 
-//middlewares
+//MIDDLEWARES
 app.use(cors())
 app.use(express.json())
 
 //LIST OF SOCKET CONNECTED USERS
 let users = []
 
-//helper fuctions
+//HELPER FUCTIONS
 const addUser = (userId, socketId) => {
     let userContain = users.some(user => user.userId === userId)
     if (!userContain) {
@@ -36,7 +36,6 @@ const addUser = (userId, socketId) => {
         console.log(users.length + " users online")
     }
 }
-
 const removeUser = (socketId) => {
     let userContain = users.some(user => user.socketId === socketId)
     if (userContain) {
@@ -45,7 +44,6 @@ const removeUser = (socketId) => {
         console.log(users.length + " users online")
     }
 }
-
 const removeUserManually = (userId) => {
     let userContain = users.some(user => user.userId === userId)
     if (userContain) {
@@ -54,17 +52,44 @@ const removeUserManually = (userId) => {
         console.log(users.length + " users online")
     }
 }
-
 const findUser = (userId) => {
     return users.find(user => user.userId === userId)
 }
-
+const getCurrentTime = () => {
+    const date = new Date()
+    let hours = ("0" + date.getHours()).slice(-2)
+    let minutes = ("0" + date.getMinutes()).slice(-2)
+    return currentTime = hours + ':' + minutes
+}
+const updateLastSeen = (socketId, userIdParameter) => {
+    let userId
+    let lastSeen = getCurrentTime()
+    if (!userIdParameter) {
+        //if userId not passed by argument
+        const user = users.filter(user => user.socketId === socketId)
+        if (user[0]) {
+            userId = user[0].userId
+        }
+    } else {
+        //if userId passed by argument
+        userId = userIdParameter
+    }
+    if (userId) {
+        const filter = { _id: userId }
+        const update = { LastSeen: lastSeen }
+        UserModel.findOneAndUpdate(filter, update, null, (err) => {
+            if (err) {
+                console.log(err)
+            }
+        })
+    }
+}
 //every time online userList modified the list will be updated in to all client side users
 const usersChangeListener = () => {
     io.emit("usersChange", users)
 }
 
-//WHEN NEW CONNCTION ESTABLISED
+//SOCKET.IO CONNECTIONS
 io.on("connection", (socket) => {
 
     //add user to online list of users
@@ -76,12 +101,14 @@ io.on("connection", (socket) => {
 
     //when disconnected
     socket.on("disconnect", () => {
+        updateLastSeen(socket.id)
         removeUser(socket.id)
         usersChangeListener()
     })
 
     //remove user from online list when user manually logout 
     socket.on("removeUser", ({ userId }) => {
+        updateLastSeen(socket.id, userId)
         removeUserManually(userId)
         usersChangeListener()
     })

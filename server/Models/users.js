@@ -15,6 +15,10 @@ const userSchema = new mongoose.Schema({
         type:String,
         required:true
     },
+    LastSeen:{
+        type:String,
+        required:true
+    }
 })
 
 const UserModel = new  mongoose.model('users',userSchema)

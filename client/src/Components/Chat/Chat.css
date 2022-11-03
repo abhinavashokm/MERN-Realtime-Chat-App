@@ -34,10 +34,14 @@
 }
 
 .chat-header .status-offline {
-    font-size: 18px;
-    margin: 18px 0 0 30px;
-    color: #F00;
+    font-size: 14px;
+    margin: 20px 0 0 30px;
+    color: rgb(0, 0, 0);
     letter-spacing: 1.5px;
+}
+
+.last-seen {
+    font-size: 13px;
 }
 
 .chatBox {

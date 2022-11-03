@@ -6,6 +6,7 @@ import { currentChatContext } from '../../Store/CurrentChat';
 import { unreadMessagesContext } from '../../Store/UnreadMessages';
 import ChatBox from './SubComponents/ChatBox';
 import StartAChat from './SubComponents/StartAChat';
+import { getCurrentTime } from '../../Store/Date';
 
 function Chat() {
 
@@ -19,9 +20,6 @@ function Chat() {
   const [arrivalMessage, setArrivalMessage] = useState(null)
   //state for store live chat
   const [chats, setChats] = useState([])
-
-  //date object
-  var date = new Date()
 
   useEffect(() => {
     if (user) {
@@ -68,8 +66,8 @@ function Chat() {
 
   //this fucnction for sending private message
   const handleMessageSubmit = ({message, setMessage}) => {
-    //taking current time in hours and minute format
-    var currentHoursAndMinutes = date.getHours() + ':' + date.getMinutes();
+    const currentHoursAndMinutes = getCurrentTime()
+
     if (!currentChat) {
       return false
     }

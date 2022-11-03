@@ -2,19 +2,23 @@ import React,{useState} from 'react'
 import './Signup.css'
 import {useNavigate} from 'react-router-dom'
 import axios from 'axios'
+import { getCurrentTime } from '../../Store/Date'
 
 function Signup() {
+    
     const navigate = useNavigate()
     const [FullName, setFullName] = useState("")
     const [UserName, setUserName] = useState("")
     const [Password, setPassword] = useState("")
     const handleSubmit = async(e) => {
+        const currentHoursAndMinutes = getCurrentTime()
         e.preventDefault()
         axios.post("http://localhost:3001/createUser",{
             FullName,
             UserName,
-            Password
-        }).then((value) => {
+            Password,
+            LastSeen:currentHoursAndMinutes
+        }).then(() => {
             console.log("submitted")
             navigate('/login')
         }).catch((err)=>{
