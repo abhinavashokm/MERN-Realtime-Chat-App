@@ -1,13 +1,13 @@
-import React, { useEffect, useContext, useState } from 'react'
+import React, { useEffect, useContext} from 'react'
 import { useNavigate } from 'react-router-dom'
 import Contacts from '../../Components/Contacts/Contacts'
 import Chat from '../../Components/Chat/Chat'
-import { userContext } from '../../Store/UserContext'
+import { authContext } from '../../Auth/AuthContext'
 import './home.css'
 
 function Home() {
 
-  const { user } = useContext(userContext)
+  const { user } = useContext(authContext)
 
   const navigate = useNavigate()
   useEffect(() => {

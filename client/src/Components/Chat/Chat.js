@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react'
 import "./Chat.css"
 import { io } from 'socket.io-client';
-import { userContext } from '../../Store/UserContext';
+import { authContext } from '../../Auth/AuthContext';
 import { currentChatContext } from '../../Store/CurrentChat';
 import { unreadMessagesContext } from '../../Store/UnreadMessages';
 import ChatBox from './SubComponents/ChatBox';
@@ -10,7 +10,7 @@ import { getCurrentTime } from '../../Store/Date';
 
 function Chat() {
 
-  const { user, socket } = useContext(userContext)
+  const { user, socket } = useContext(authContext)
   const { currentChat } = useContext(currentChatContext)
   const { setUnreadMessages } = useContext(unreadMessagesContext)
 
@@ -42,7 +42,7 @@ function Chat() {
         })
       })
     }
-  }, [user, arrivalMessage, currentChat])
+  }, [user, arrivalMessage, currentChat, socket])
 
   //update online users list
   socket.current && socket.current.on("usersChange", (users) => {
@@ -51,21 +51,22 @@ function Chat() {
 
   // action on new arrivalmessage
   useEffect(() => {
-    if(arrivalMessage) {
-    //add arrivalmessage to converstations list
-    setChats(c => [...c, arrivalMessage]) 
-    //add the new message to unreadMessages list if the message not from current chating person
-    if(!currentChat || arrivalMessage.senderId !== currentChat._id) {
-      setUnreadMessages(d => [...d, arrivalMessage])
+    if (arrivalMessage) {
+      //add arrivalmessage to converstations list
+      setChats(c => [...c, arrivalMessage])
+      //add the new message to unreadMessages list if the message not from current chating person
+      if (!currentChat || arrivalMessage.senderId !== currentChat._id) {
+        setUnreadMessages(d => [...d, arrivalMessage])
+      }
+      //after adding arrival message to chat array arrivalMessage variable will be reset to null
+      setArrivalMessage(null)
     }
-    //after adding arrival message to chat array arrivalMessage variable will be reset to null
-    setArrivalMessage(null)
-    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [arrivalMessage])
 
 
   //this fucnction for sending private message
-  const handleMessageSubmit = ({message, setMessage}) => {
+  const handleMessageSubmit = ({ message, setMessage }) => {
     const currentHoursAndMinutes = getCurrentTime()
 
     if (!currentChat) {
@@ -89,7 +90,7 @@ function Chat() {
   }
 
   //in the initial state StartAchat component will show, when user selecting a chat Chatbox component will show
-  const chatSection = currentChat ? <ChatBox props={{ chats, handleMessageSubmit, onlineList}} />
+  const chatSection = currentChat ? <ChatBox props={{ chats, handleMessageSubmit, onlineList }} />
     : <StartAChat />
 
   return (

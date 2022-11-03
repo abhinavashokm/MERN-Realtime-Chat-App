@@ -50,7 +50,7 @@ function ChatBox({ props }) {
             <div className="chat-header">
                 {currentChat && <span className='person-name'>{currentChat.FullName}</span>}
                 <span className={onlineStatus ? 'status-online' : 'status-offline'} >{onlineStatus ? "Online" : "last seen on "}
-                   {onlineStatus ? "" : <span className='last-seen' >{currentChat.LastSeen}</span> }
+                    {onlineStatus ? "" : <span className='last-seen' >{currentChat.LastSeen}</span>}
                 </span>
             </div>
             <div className="messages-container">

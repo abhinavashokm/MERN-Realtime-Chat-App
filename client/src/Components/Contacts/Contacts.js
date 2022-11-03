@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import './Contacts.css'
 import axios from 'axios'
-import { userContext } from '../../Store/UserContext'
+import { authContext } from '../../Auth/AuthContext'
 import { currentChatContext } from '../../Store/CurrentChat'
 import { unreadMessagesContext } from '../../Store/UnreadMessages'
 import { confirmAlert } from 'react-confirm-alert'; // Import alert npm
@@ -10,7 +10,7 @@ import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css for aler
 
 function Contacts() {
 
-  const { user, setUser, socket } = useContext(userContext)
+  const { user, setUser, socket } = useContext(authContext)
   const { setCurrentChat, currentChat } = useContext(currentChatContext)
   const { unreadMessages } = useContext(unreadMessagesContext)
 
@@ -74,23 +74,23 @@ function Contacts() {
             //for checking is it this the selected chat
             if (currentChat && contact._id === currentChat._id) {
               selectedChat = true
-            }else {
+            } else {
               selectedChat = false
             }
-              return (
-                <div onClick={() => {
-                  setCurrentChat(contact)
+            return (
+              <div onClick={() => {
+                setCurrentChat(contact)
 
-                }} key={index} className= {selectedChat ? "selected-contact-item" : "contact-item" } >
+              }} key={index} className={selectedChat ? "selected-contact-item" : "contact-item"} >
 
-                  <span className='contactName'>{contact.FullName}</span>
-                  {
-                    newMessage && <div className='unreadMessages-badge' >
-                      <span>new</span>
-                    </div>
-                  }
-                </div>
-              )
+                <span className='contactName'>{contact.FullName}</span>
+                {
+                  newMessage && <div className='unreadMessages-badge' >
+                    <span>new</span>
+                  </div>
+                }
+              </div>
+            )
           })
         }
       </div>

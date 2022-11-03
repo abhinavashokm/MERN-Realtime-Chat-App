@@ -2,12 +2,12 @@ import React, { useState, useContext } from 'react'
 import './Login.css'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import {userContext} from '../../Store/UserContext'
+import { authContext } from '../../Auth/AuthContext'
 
 
 function Login() {
   const navigate = useNavigate()
-  const {setUser} = useContext(userContext)
+  const {setUser} = useContext(authContext)
 
   const [UserName, setUserName] = useState("")
   const [Password, setPassword] = useState("")

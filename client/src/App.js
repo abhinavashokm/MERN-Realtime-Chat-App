@@ -3,11 +3,11 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import Home from './Pages/Home/Home'
 import Login from './Components/Login/Login';
 import Signup from './Pages/Signup/Signup';
-import { userContext } from './Store/UserContext';
+import { authContext } from './Auth/AuthContext';
 import './App.css'
 
 function App() {
-  const { user } = useContext(userContext)
+  const { user } = useContext(authContext)
 
   return (
     <div className="App">
