@@ -3,6 +3,7 @@ import { currentChatContext } from '../../../Store/CurrentChat';
 import { unreadMessagesContext } from '../../../Store/UnreadMessages';
 import styled from 'styled-components'
 import "../Chat.css"
+import InputField from '../../InputField/InputField';
 
 const Mess = styled.div`
 display: flex;
@@ -77,8 +78,14 @@ function ChatBox({ props }) {
             <div className="chatBox">
                 <div className="chatbox-container">
                     <form onSubmit={messageSubmitHelper} >
-                        <input value={message} onChange={(e) => setMessage(e.target.value)}
-                            className="chat-input" type="text" placeholder='type something...' />
+                        <InputField
+                            type="text"
+                            value={message}
+                            name="message"
+                            placeholder="type something..."
+                            className="chat-input"
+                            onChangeFunction={setMessage}
+                        />
                     </form>
                 </div>
             </div>

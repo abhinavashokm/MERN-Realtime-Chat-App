@@ -4,6 +4,7 @@ const { Server } = require("socket.io");
 const UserModel = require('./Models/users')
 const cors = require('cors')
 const bcrypt = require('bcrypt');
+const userHelper = require('./Helpers/UsersHelper')
 
 
 //MONGODB CONNCETION
@@ -25,97 +26,35 @@ app.use(cors())
 app.use(express.json())
 
 //LIST OF SOCKET CONNECTED USERS
-let users = []
-
-//HELPER FUCTIONS
-const addUser = (userId, socketId) => {
-    let userContain = users.some(user => user.userId === userId)
-    if (!userContain) {
-        users.push({ userId, socketId })
-        console.log("new user logined")
-        console.log(users.length + " users online")
-    }
-}
-const removeUser = (socketId) => {
-    let userContain = users.some(user => user.socketId === socketId)
-    if (userContain) {
-        users = users.filter(user => user.socketId !== socketId)
-        console.log("one user disconnected");
-        console.log(users.length + " users online")
-    }
-}
-const removeUserManually = (userId) => {
-    let userContain = users.some(user => user.userId === userId)
-    if (userContain) {
-        users = users.filter(user => user.userId !== userId)
-        console.log("one user disconnected");
-        console.log(users.length + " users online")
-    }
-}
-const findUser = (userId) => {
-    return users.find(user => user.userId === userId)
-}
-const getCurrentTime = () => {
-    const date = new Date()
-    let hours = ("0" + date.getHours()).slice(-2)
-    let minutes = ("0" + date.getMinutes()).slice(-2)
-    return currentTime = hours + ':' + minutes
-}
-const updateLastSeen = (socketId, userIdParameter) => {
-    let userId
-    let lastSeen = getCurrentTime()
-    if (!userIdParameter) {
-        //if userId not passed by argument
-        const user = users.filter(user => user.socketId === socketId)
-        if (user[0]) {
-            userId = user[0].userId
-        }
-    } else {
-        //if userId passed by argument
-        userId = userIdParameter
-    }
-    if (userId) {
-        const filter = { _id: userId }
-        const update = { LastSeen: lastSeen }
-        UserModel.findOneAndUpdate(filter, update, null, (err) => {
-            if (err) {
-                console.log(err)
-            }
-        })
-    }
-}
-//every time online userList modified the list will be updated in to all client side users
-const usersChangeListener = () => {
-    io.emit("usersChange", users)
-}
+let users = userHelper.users
 
 //SOCKET.IO CONNECTIONS
 io.on("connection", (socket) => {
 
     //add user to online list of users
     socket.on("addUser", (userId) => {
-        addUser(userId, socket.id)
+        userHelper.addUser(userId, socket.id)
         io.to(socket.id).emit("onlineUsersList", users)
-        usersChangeListener()
+        userHelper.usersChangeListener(io)
     })
 
     //when disconnected
     socket.on("disconnect", () => {
-        updateLastSeen(socket.id)
-        removeUser(socket.id)
-        usersChangeListener()
+        userHelper.updateLastSeen(socket.id)
+        userHelper.removeUser(socket.id)
+        userHelper.usersChangeListener(io)
     })
 
     //remove user from online list when user manually logout 
     socket.on("removeUser", ({ userId }) => {
-        updateLastSeen(socket.id, userId)
-        removeUserManually(userId)
-        usersChangeListener()
+        userHelper.updateLastSeen(socket.id, userId)
+        userHelper.removeUserManually(userId)
+        userHelper.usersChangeListener(io)
     })
 
     //recieve private messages from sender and send it to the target user
     socket.on("sendMessage", async ({ senderId, recieverId, msg, time }) => {
-        const recieverUser = await findUser(recieverId)
+        const recieverUser = await userHelper.findUser(recieverId)
         if (recieverUser) {
             io.to(recieverUser.socketId).emit("recieveMessage", { senderId, msg, recieverId, time })
         }
@@ -124,7 +63,6 @@ io.on("connection", (socket) => {
 })
 
 //ROUTERS
-
 //for fetching all contacts in the database
 app.get('/getAllContacts', (req, res) => {
     UserModel.find({}, (err, data) => {
@@ -135,7 +73,6 @@ app.get('/getAllContacts', (req, res) => {
         }
     })
 })
-
 //manage login
 app.post('/userLogin', async (req, res) => {
     const { UserName, Password } = req.body
@@ -157,7 +94,6 @@ app.post('/userLogin', async (req, res) => {
         }
     })
 })
-
 //manage signup
 app.post('/createUser', (req, res) => {
     const user = req.body

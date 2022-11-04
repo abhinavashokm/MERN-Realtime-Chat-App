@@ -3,22 +3,23 @@ import './Login.css'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { authContext } from '../../Auth/AuthContext'
+import InputField from '../InputField/InputField'
 
 
 function Login() {
   const navigate = useNavigate()
-  const {setUser} = useContext(authContext)
+  const { setUser } = useContext(authContext)
 
   const [UserName, setUserName] = useState("")
   const [Password, setPassword] = useState("")
   const handleSubmit = (e) => {
     e.preventDefault()
-    axios.post("http://localhost:3001/userLogin",{
+    axios.post("http://localhost:3001/userLogin", {
       UserName,
       Password
     }).then((res) => {
       const userDetails = res.data[0]
-      if(!userDetails) {
+      if (!userDetails) {
         console.log('not submitted')
         navigate('/login')
       } else {
@@ -27,7 +28,7 @@ function Login() {
         navigate('/')
       }
     })
-    
+
   }
 
   return (
@@ -35,13 +36,24 @@ function Login() {
       <h1>Login</h1>
       <form onSubmit={handleSubmit} >
         <div className="loginForm-container">
-
-          <label>User Name</label>
-          <input onChange={(e) => setUserName(e.target.value)} type="text" placeholder="Enter Phone number" name="uname" required />
-
-          <label>Password</label>
-          <input onChange={(e) => setPassword(e.target.value)} type="password" placeholder="Enter Password" name="psw" required></input>
-
+          <InputField
+            label="User Name"
+            type="text"
+            name="uname"
+            placeholder="Enter Phone number"
+            className="inputField"
+            value={UserName}
+            onChangeFunction={setUserName}
+          />
+          <InputField
+            label="Password"
+            type="password"
+            name="psw"
+            placeholder="Enter Password"
+            className="inputField"
+            value={Password}
+            onChangeFunction={setPassword}
+          />
           <button type="submit">Login</button>
 
         </div>
