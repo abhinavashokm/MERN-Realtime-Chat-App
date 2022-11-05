@@ -12,21 +12,26 @@ function Login() {
 
   const [UserName, setUserName] = useState("")
   const [Password, setPassword] = useState("")
+  const [loginErrorMsg, setLoginErrorMsg] = useState("")
   const handleSubmit = (e) => {
     e.preventDefault()
     axios.post("http://localhost:3001/userLogin", {
       UserName,
       Password
     }).then((res) => {
-      const userDetails = res.data[0]
-      if (!userDetails) {
-        console.log('not submitted')
-        navigate('/login')
+      const login = res.data.login
+      if (!login) {
+        setLoginErrorMsg(res.data.errorMsg)
+        console.log(res.data.errorMsg)
       } else {
+        const userDetails = res.data.user[0]
+        setLoginErrorMsg("")
         console.log("submitted")
         setUser(userDetails)
         navigate('/')
       }
+    }).catch((err) => {
+      setLoginErrorMsg("make sure your device is connected to the internet")
     })
 
   }
@@ -36,6 +41,7 @@ function Login() {
       <h1>Login</h1>
       <form onSubmit={handleSubmit} >
         <div className="loginForm-container">
+          {loginErrorMsg && <p className='loginError' >{loginErrorMsg}</p>}
           <InputField
             label="User Name"
             type="text"

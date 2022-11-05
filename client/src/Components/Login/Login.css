@@ -59,3 +59,8 @@ button:hover {
     cursor: pointer;
     color: rgb(0, 98, 255);
 }
+
+.loginError {
+    color: #dc3545;
+    margin-bottom: 12px;
+}

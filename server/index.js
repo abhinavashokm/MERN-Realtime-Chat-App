@@ -8,7 +8,8 @@ const userHelper = require('./Helpers/UsersHelper')
 
 
 //MONGODB CONNCETION
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+// const { default: Login } = require('../client/src/Components/Login/Login');
 mongoose.connect('mongodb://localhost:27017/ChatApp')
 
 //SOCKET.IO SETUP
@@ -75,21 +76,46 @@ app.get('/getAllContacts', (req, res) => {
 })
 //manage login
 app.post('/userLogin', async (req, res) => {
+    let login
+    let errorMsg
     const { UserName, Password } = req.body
     UserModel.find({ UserName }, (err, user) => {
         if (err) {
-            res.json(false)
+            login = false
+            errorMsg = "something went wrong"
+            res.json({ login, errorMsg })
         } else {
             if (user.length > 0) {
                 bcrypt.compare(Password, user[0].Password, function (err, result) {
                     if (err) {
-                        res.json(false)
+                        login = false
+                        errorMsg = "something went wrong"
+                        res.json({ login, errorMsg })
                     } else if (!result) {
-                        res.json(false)
+                        //if password does not match
+                        login = false
+                        errorMsg = "password does not match!"
+                        res.json({ login, errorMsg })
                     } else {
-                        res.json(user)
+                        //username and password verification successfull
+                        let userAlreadyLogined = userHelper.ifUserAlreadyLogined((user[0]._id).toString())
+                        if (userAlreadyLogined) {
+                            //if user already logged in
+                            login = false
+                            errorMsg = "user already logged in!"
+                            res.json({ login, errorMsg })
+                        } else {
+                            //finally login success
+                            login = true
+                            res.json({ user, login })
+                        }
                     }
                 })
+            } else {
+                //if user not found
+                login = false
+                errorMsg = "user not found!"
+                res.json({ login, errorMsg })
             }
         }
     })

@@ -21,8 +21,10 @@ function Signup() {
             LastSeen: currentHoursAndMinutes
         }).then(() => {
             console.log("submitted")
+            alert("Your account has been created successfully")
             navigate('/login')
         }).catch((err) => {
+            console.log('hai error')
             console.log(err)
         })
     }

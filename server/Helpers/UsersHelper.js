@@ -66,5 +66,9 @@ module.exports = {
     },
     usersChangeListener: (io) => {
         io.emit("usersChange", users)
+    },
+    ifUserAlreadyLogined: (userId) => {
+        let userAlreadyLogined = users.some(userObj => userObj.userId === userId)
+        return userAlreadyLogined
     }
 }
