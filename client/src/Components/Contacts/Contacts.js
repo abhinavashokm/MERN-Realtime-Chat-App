@@ -6,6 +6,7 @@ import { currentChatContext } from '../../Store/CurrentChat'
 import { unreadMessagesContext } from '../../Store/UnreadMessages'
 import { confirmAlert } from 'react-confirm-alert'; // Import alert npm
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css for alert
+import InputField from '../InputField/InputField'
 
 
 function Contacts() {
@@ -57,11 +58,24 @@ function Contacts() {
 
   return (
     <div className='contacts-container'>
+
       <div className="profileBand">
         <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRA7ECizMinUV4oPQG6BUFIZZmeXehbj7pytQ&usqp=CAU" alt="person" />
         {user && <span>{user.FullName}</span>}
         <button onClick={logoutUser} >Logout</button>
       </div>
+
+      <div className="contacts-search">
+
+        <InputField
+          type="search"
+          name="search"
+          placeholder="Search..."
+          className="search"
+        />
+
+      </div>
+
       <div className='contact-list'>
         {
           contactsList.map((contact, index) => {
