@@ -4,15 +4,18 @@ import { io } from 'socket.io-client';
 import { authContext } from '../../Auth/AuthContext';
 import { currentChatContext } from '../../Store/CurrentChat';
 import { unreadMessagesContext } from '../../Store/UnreadMessages';
+import { contactListContext } from '../../Store/ContactList';
 import ChatBox from './SubComponents/ChatBox';
 import StartAChat from './SubComponents/StartAChat';
 import { getCurrentTime } from '../../Store/Date';
+import axios from 'axios';
 
 function Chat() {
 
   const { user, socket } = useContext(authContext)
   const { currentChat } = useContext(currentChatContext)
   const { setUnreadMessages } = useContext(unreadMessagesContext)
+  const { contactsList, setContactsList, allUsers } = useContext(contactListContext)
 
   //list of users currently online
   const [onlineList, setOnlineList] = useState()
@@ -58,6 +61,19 @@ function Chat() {
       if (!currentChat || arrivalMessage.senderId !== currentChat._id) {
         setUnreadMessages(d => [...d, arrivalMessage])
       }
+      //checking if the message from a unsaved contact
+      let unknownPerson = !(contactsList.some(contact => contact._id === arrivalMessage.senderId))
+      //if the message form an unknown person that contact saving to the database
+      if (unknownPerson) {
+        let senderDetails = allUsers.find(user => user._id === arrivalMessage.senderId)
+        if (senderDetails) {
+          axios.post("http://localhost:3001/addNewContact", { userId: user._id, contact: senderDetails }).then((res) => {
+            console.log("added to contacts")
+            setContactsList(res.data)
+          })
+        }
+      }
+
       //after adding arrival message to chat array arrivalMessage variable will be reset to null
       setArrivalMessage(null)
     }
@@ -66,12 +82,24 @@ function Chat() {
 
 
   //this fucnction for sending private message
-  const handleMessageSubmit = ({ message, setMessage }) => {
+  const handleMessageSubmit = async ({ message, setMessage }) => {
     const currentHoursAndMinutes = getCurrentTime()
 
     if (!currentChat) {
       return false
     }
+
+    let alreadyInContacts = await contactsList.some(contact => contact._id === currentChat._id)
+
+    if (!alreadyInContacts) {
+      axios.post("http://localhost:3001/addNewContact", { userId: user._id, contact: currentChat }).then((res) => {
+        console.log("added to contacts")
+        setContactsList(res.data)
+      })
+    } else {
+      console.log("contact already exist")
+    }
+
     socket.current.emit("sendMessage", {
       senderId: user._id,
       recieverId: currentChat._id,

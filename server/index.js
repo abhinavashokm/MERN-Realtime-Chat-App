@@ -2,6 +2,7 @@ const express = require('express')
 const http = require("http");
 const { Server } = require("socket.io");
 const UserModel = require('./Models/users')
+const ContactListModel = require('./Models/contactList')
 const cors = require('cors')
 const bcrypt = require('bcrypt');
 const userHelper = require('./Helpers/UsersHelper')
@@ -73,6 +74,7 @@ app.get('/getAllContacts', (req, res) => {
         }
     })
 })
+
 //manage login
 app.post('/userLogin', async (req, res) => {
     let login
@@ -123,6 +125,7 @@ app.post('/userLogin', async (req, res) => {
 app.post('/createUser', (req, res) => {
     const user = req.body
     const saltRounds = 10
+
     //hash key of the password will store in database
     bcrypt.hash(user.Password, saltRounds, async function (err, hash) {
         if (err) {
@@ -131,9 +134,49 @@ app.post('/createUser', (req, res) => {
             user.Password = hash
             const newUser = UserModel(user)
             await newUser.save()
+            
+            const contact = {UserId : newUser._id,Contacts : []}
+            const newContactList = ContactListModel(contact)
+            await newContactList.save()
             res.json()
         }
     });
+})
+//get all saved contacts of the user
+app.post('/getContactList', (req, res) => {
+    const {userId} = req.body
+    ContactListModel.find({UserId:userId}, (err, data) => {
+        if (err) {
+            res.json(false)
+        } else if(data.length > 0) {
+            res.json(data[0].Contacts)
+        }
+    })
+})
+//add new contact to the users contact list
+app.post('/addNewContact', (req, res) => {
+    const {contact,userId} = req.body
+
+    const filter = { UserId: userId }
+    const update = { Contacts: contact }
+    ContactListModel.findOneAndUpdate(filter,
+        {
+            $push:update
+        },
+        null, (err) => {
+            if(!err){
+
+                ContactListModel.find({UserId:userId}, (err, data) => {
+                    if (err) {
+                        res.json(false)
+                    } else if(data.length > 0) {
+                        res.json(data[0].Contacts)
+                    }
+                })
+                
+            }
+        }
+        )
 })
 
 //PORT LISTENING

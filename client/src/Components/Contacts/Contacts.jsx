@@ -3,6 +3,7 @@ import './Contacts.css'
 import axios from 'axios'
 import { authContext } from '../../Auth/AuthContext'
 import { currentChatContext } from '../../Store/CurrentChat'
+import { contactListContext } from '../../Store/ContactList'
 import { confirmAlert } from 'react-confirm-alert'; // Import alert npm
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css for alert
 import InputField from '../InputField/InputField'
@@ -14,23 +15,35 @@ function Contacts() {
 
   const { user, setUser, socket } = useContext(authContext)
   const { setCurrentChat } = useContext(currentChatContext)
+  const { contactsList, setContactsList, setAllUsers } = useContext(contactListContext)
 
-
-  const [contactsList, setContactsList] = useState([])
   const [search, setSearch] = useState()
 
   useEffect(() => {
-    axios.get("http://localhost:3001/getAllContacts").then((res) => {
-      if (!res.data) {
-        console.log("something went wrong")
-      } else {
-        if (user) {
+    if (user) {
+      axios.post("http://localhost:3001/getContactList", { userId: user._id }).then((res) => {
+        if (!res.data) {
+          console.log("something went wrong")
+        } else {
           let contacts = res.data.filter(contact => contact._id !== user._id)
           setContactsList(contacts)
         }
-      }
-    })
+      })
+    }
   }, [user])
+
+  useEffect(() => {
+    axios.get("http://localhost:3001/getAllContacts").then((res) => {
+        if (!res.data) {
+            console.log("something went wrong")
+        } else {
+            if (user) {
+                let contacts = res.data.filter(contact => contact._id !== user._id)
+                setAllUsers(contacts)
+            }
+        }
+    })
+}, [user])
 
   //fuction for signout current user
   const logoutUser = () => {
@@ -54,7 +67,7 @@ function Contacts() {
     })
   }
 
-  const ContactlistSection = search ? <SearchResult props={{contactsList,search}} /> : <SavedContacts props={{ contactsList }} />
+  const ContactlistSection = search ? <SearchResult props={{ search }} /> : <SavedContacts props={{ contactsList }} />
 
   return (
     <div className='contacts-container'>
