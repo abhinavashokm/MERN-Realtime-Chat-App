@@ -9,13 +9,14 @@ import ChatBox from './SubComponents/ChatBox';
 import StartAChat from './SubComponents/StartAChat';
 import { getCurrentTime } from '../../Store/Date';
 import axios from 'axios';
+import { addToContactList } from '../../Helpers/HelperFunctions';
 
 function Chat() {
 
   const { user, socket } = useContext(authContext)
   const { currentChat } = useContext(currentChatContext)
   const { setUnreadMessages } = useContext(unreadMessagesContext)
-  const { contactsList, setContactsList, allUsers } = useContext(contactListContext)
+  const { contactsList, setContactsList } = useContext(contactListContext)
 
   //list of users currently online
   const [onlineList, setOnlineList] = useState()
@@ -65,15 +66,10 @@ function Chat() {
       let unknownPerson = !(contactsList.some(contact => contact._id === arrivalMessage.senderId))
       //if the message form an unknown person that contact saving to the database
       if (unknownPerson) {
-        let senderDetails = allUsers.find(user => user._id === arrivalMessage.senderId)
-        if (senderDetails) {
-          axios.post("http://localhost:3001/addNewContact", { userId: user._id, contact: senderDetails }).then((res) => {
-            console.log("added to contacts")
-            setContactsList(res.data)
-          })
-        }
+        addToContactList(arrivalMessage.senderId, user._id).then((newContactList) => {
+          setContactsList(newContactList)
+        })
       }
-
       //after adding arrival message to chat array arrivalMessage variable will be reset to null
       setArrivalMessage(null)
     }
@@ -96,8 +92,6 @@ function Chat() {
         console.log("added to contacts")
         setContactsList(res.data)
       })
-    } else {
-      console.log("contact already exist")
     }
 
     socket.current.emit("sendMessage", {

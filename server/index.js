@@ -1,8 +1,8 @@
 const express = require('express')
 const http = require("http");
 const { Server } = require("socket.io");
-const UserModel = require('./Models/users')
-const ContactListModel = require('./Models/contactList')
+const UserModel = require('./Models/Users')
+const ContactListModel = require('./Models/ContactList')
 const cors = require('cors')
 const bcrypt = require('bcrypt');
 const userHelper = require('./Helpers/UsersHelper')
@@ -10,6 +10,8 @@ const userHelper = require('./Helpers/UsersHelper')
 
 //MONGODB CONNCETION
 const mongoose = require('mongoose');
+const UsersHelper = require('./Helpers/UsersHelper');
+const { response } = require('express');
 mongoose.connect('mongodb://localhost:27017/ChatApp')
 
 //SOCKET.IO SETUP
@@ -99,17 +101,18 @@ app.post('/userLogin', async (req, res) => {
                         res.json({ login, errorMsg })
                     } else {
                         //username and password verification successfull
-                        let userAlreadyLogined = userHelper.ifUserAlreadyLogined((user[0]._id).toString())
-                        if (userAlreadyLogined) {
-                            //if user already logged in
-                            login = false
-                            errorMsg = "user already logged in!"
-                            res.json({ login, errorMsg })
-                        } else {
-                            //finally login success
-                            login = true
-                            res.json({ user, login })
-                        }
+                        userHelper.ifUserAlreadyLogined((user[0]._id).toString()).then((userAlreadyLogined) => {
+                            if (userAlreadyLogined) {
+                                //if user already logged in
+                                login = false
+                                errorMsg = "user already logged in!"
+                                res.json({ login, errorMsg })
+                            } else {
+                                //finally login success
+                                login = true
+                                res.json({ user, login })
+                            }
+                        })
                     }
                 })
             } else {
@@ -134,49 +137,49 @@ app.post('/createUser', (req, res) => {
             user.Password = hash
             const newUser = UserModel(user)
             await newUser.save()
-            
-            const contact = {UserId : newUser._id,Contacts : []}
+
+            const contact = { UserId: newUser._id, Contacts: [] }
             const newContactList = ContactListModel(contact)
             await newContactList.save()
             res.json()
         }
     });
 })
-//get all saved contacts of the user
-app.post('/getContactList', (req, res) => {
-    const {userId} = req.body
-    ContactListModel.find({UserId:userId}, (err, data) => {
-        if (err) {
+//return all saved contacts of the user
+app.post('/getContactList', async (req, res) => {
+    const { userId } = req.body
+    UsersHelper.getContactList(userId).then((contactList) => {
+        if (contactList) {
+            res.json(contactList)
+        } else {
             res.json(false)
-        } else if(data.length > 0) {
-            res.json(data[0].Contacts)
         }
+    })
+})
+//return all the details of requested user
+app.post("/findOneUser", (req, res) => {
+    const { userId } = req.body
+    userHelper.findOneUser(userId).then((userDetails) => {
+        res.json(userDetails)
     })
 })
 //add new contact to the users contact list
 app.post('/addNewContact', (req, res) => {
-    const {contact,userId} = req.body
-
+    const { contact, userId } = req.body
     const filter = { UserId: userId }
     const update = { Contacts: contact }
-    ContactListModel.findOneAndUpdate(filter,
-        {
-            $push:update
-        },
-        null, (err) => {
-            if(!err){
+    ContactListModel.findOneAndUpdate(filter, { $push: update }, null,
+        (err) => {
+            if (!err) {
 
-                ContactListModel.find({UserId:userId}, (err, data) => {
-                    if (err) {
-                        res.json(false)
-                    } else if(data.length > 0) {
-                        res.json(data[0].Contacts)
+                userHelper.getContactList(userId).then((contactList) => {
+                    if (contactList) {
+                        res.json(contactList)
                     }
                 })
-                
+
             }
-        }
-        )
+        })
 })
 
 //PORT LISTENING

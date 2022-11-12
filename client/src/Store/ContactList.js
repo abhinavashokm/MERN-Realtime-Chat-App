@@ -4,9 +4,8 @@ export const contactListContext = createContext(null)
 
 export const ContactListContextProvider = ({ children }) => {
     const [contactsList, setContactsList] = useState([])
-    const [allUsers, setAllUsers] = useState([])
     return (
-        <contactListContext.Provider value={{ contactsList, setContactsList, allUsers, setAllUsers }} >
+        <contactListContext.Provider value={{ contactsList, setContactsList }} >
             {children}
         </contactListContext.Provider>
     )

@@ -1,12 +1,29 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { currentChatContext } from '../../../Store/CurrentChat'
-import { contactListContext } from '../../../Store/ContactList'
+import { authContext } from '../../../Auth/AuthContext'
+import axios from 'axios'
 
 function SearchResult({ props }) {
 
     const { search } = props
     const { setCurrentChat, currentChat } = useContext(currentChatContext)
-    const { allUsers} = useContext(contactListContext)
+    const { user } = useContext(authContext)
+
+    const [allUsers, setAllUsers] = useState([])
+
+    //for getting data of all users
+    useEffect(() => {
+        axios.get("http://localhost:3001/getAllContacts").then((res) => {
+            if (!res.data) {
+                console.log("something went wrong")
+            } else {
+                if (user) {
+                    let contacts = res.data.filter(contact => contact._id !== user._id)
+                    setAllUsers(contacts)
+                }
+            }
+        })
+    }, [user])
 
     let selectedSearchItem = false
 

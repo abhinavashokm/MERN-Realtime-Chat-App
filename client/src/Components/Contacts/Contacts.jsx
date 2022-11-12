@@ -15,10 +15,11 @@ function Contacts() {
 
   const { user, setUser, socket } = useContext(authContext)
   const { setCurrentChat } = useContext(currentChatContext)
-  const { contactsList, setContactsList, setAllUsers } = useContext(contactListContext)
+  const { contactsList, setContactsList } = useContext(contactListContext)
 
   const [search, setSearch] = useState()
 
+  //for getting saved contacts
   useEffect(() => {
     if (user) {
       axios.post("http://localhost:3001/getContactList", { userId: user._id }).then((res) => {
@@ -32,19 +33,6 @@ function Contacts() {
     }
   }, [user])
 
-  useEffect(() => {
-    axios.get("http://localhost:3001/getAllContacts").then((res) => {
-        if (!res.data) {
-            console.log("something went wrong")
-        } else {
-            if (user) {
-                let contacts = res.data.filter(contact => contact._id !== user._id)
-                setAllUsers(contacts)
-            }
-        }
-    })
-}, [user])
-
   //fuction for signout current user
   const logoutUser = () => {
     confirmAlert({
@@ -57,6 +45,7 @@ function Contacts() {
             setCurrentChat(null)
             socket.current.emit("removeUser", { userId: user._id })
             setUser(null)
+            setContactsList(null)
           }
         },
         {

@@ -1,4 +1,5 @@
-const UserModel = require('../Models/users')
+const UserModel = require('../Models/Users')
+const ContactListModel = require('../Models/ContactList')
 
 //LIST OF SOCKET CONNECTED USERS
 let users = []
@@ -68,7 +69,28 @@ module.exports = {
         io.emit("usersChange", users)
     },
     ifUserAlreadyLogined: (userId) => {
-        let userAlreadyLogined = users.some(userObj => userObj.userId === userId)
-        return userAlreadyLogined
+        return new Promise((resolve, reject) => {
+            const userAlreadyLogined = users.some(userObj => userObj.userId === userId)
+            resolve(userAlreadyLogined)
+        })
+    },
+    getContactList: (userId) => {
+        return new Promise((resolve, reject) => {
+            ContactListModel.find({ UserId: userId }, (err, data) => {
+                if (!err && data[0]) {
+                    resolve(data[0].Contacts)
+                }
+            })
+        })
+    },
+    findOneUser : (userId) => {
+        return new Promise((resolve, reject ) => {
+            const filter = {_id : userId}
+            UserModel.find(filter,(err, data) => {
+                if(!err) {
+                    resolve(data[0])
+                }
+            })
+        })
     }
 }

@@ -14,7 +14,7 @@ function SavedContacts({ props }) {
     return (
         <div>
             {
-                contactsList.map((contact, index) => {
+                contactsList && contactsList.map((contact, index) => {
                     //for checking there is any unread message for this contact
                     if (unreadMessages.some(obj => obj.senderId === contact._id)) {
                         newMessage = true
