@@ -1,33 +1,26 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import './Signup.css'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
-import { getCurrentTime } from '../../Store/Date'
 import InputField from '../InputField/InputField'
+import { authHelpers } from '../../Auth/AuthHelpers'
 
 function Signup() {
 
     const navigate = useNavigate()
+    const { signup } = useContext(authHelpers)
     const [FullName, setFullName] = useState("")
     const [UserName, setUserName] = useState("")
     const [Password, setPassword] = useState("")
-    const handleSubmit = async (e) => {
-        const currentHoursAndMinutes = getCurrentTime()
+
+    const handleSubmit = (e) => {
         e.preventDefault()
-        axios.post("http://localhost:3001/createUser", {
-            FullName,
-            UserName,
-            Password,
-            LastSeen: currentHoursAndMinutes
-        }).then(() => {
-            console.log("submitted")
-            alert("Your account has been created successfully")
+        signup(FullName, UserName, Password).then(() => {
             navigate('/login')
         }).catch((err) => {
-            console.log('hai error')
             console.log(err)
         })
     }
+
     return (
         <div className='SignUp-Page'>
             <h1>Sign Up</h1>

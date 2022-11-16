@@ -1,6 +1,6 @@
 import React from 'react'
 
-function StartAChat() {
+function EmptyChat() {
   return (
     <div className='emptyChat-container' >
       <div className='startChat-div'>
@@ -10,4 +10,4 @@ function StartAChat() {
   )
 }
 
-export default StartAChat
+export default EmptyChat

@@ -1,39 +1,29 @@
 import React, { useState, useContext } from 'react'
 import './Login.css'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
 import { authContext } from '../../Auth/AuthContext'
+import { authHelpers } from '../../Auth/AuthHelpers'
 import InputField from '../InputField/InputField'
 
 
 function Login() {
   const navigate = useNavigate()
   const { setUser } = useContext(authContext)
+  const { login } = useContext(authHelpers)
 
   const [UserName, setUserName] = useState("")
   const [Password, setPassword] = useState("")
   const [loginErrorMsg, setLoginErrorMsg] = useState("")
+
   const handleSubmit = (e) => {
     e.preventDefault()
-    axios.post("http://localhost:3001/userLogin", {
-      UserName,
-      Password
-    }).then((res) => {
-      const login = res.data.login
-      if (!login) {
-        setLoginErrorMsg(res.data.errorMsg)
-        console.log(res.data.errorMsg)
-      } else {
-        const userDetails = res.data.user[0]
-        setLoginErrorMsg("")
-        console.log("submitted")
-        setUser(userDetails)
-        navigate('/')
-      }
-    }).catch((err) => {
-      setLoginErrorMsg("make sure your device is connected to the internet")
+    login(UserName, Password).then((userDetails) => {
+      setLoginErrorMsg("")
+      setUser(userDetails)
+      navigate('/')
+    }).catch((errMsg) => {
+      setLoginErrorMsg(errMsg)
     })
-
   }
 
   return (

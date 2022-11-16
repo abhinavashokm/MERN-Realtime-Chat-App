@@ -18,7 +18,7 @@
     border-radius: 4px;
     border: none;
     outline: none;
-    background:white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' class='bi bi-search' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'%3E%3C/path%3E%3C/svg%3E") no-repeat 13px center;
+    background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' class='bi bi-search' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'%3E%3C/path%3E%3C/svg%3E") no-repeat 13px center;
 }
 
 .profileBand {
@@ -81,29 +81,13 @@
     pointer-events: none;
 }
 
-.contactName {
-    font-size: 18px;
-    color: black;
-    margin: 5px 0 0 15px;
-}
-
-.unreadMessages-badge {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #65bf58;
+.selected-contact-item span {
     color: white;
-    margin: auto 20px auto auto;
-    border-radius: 65px;
-    width: 40px;
-    height: 24px;
-    font-size: 14px;
-    pointer-events: none;
 }
 
 .search-contact-item {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     border-bottom: 1px solid #f2f2f2;
     width: 100%;
     height: 60px;
@@ -119,7 +103,7 @@
 
 .selected-search-contact-item {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     border-bottom: 1px solid #f2f2f2;
     width: 100%;
     height: 60px;
@@ -131,4 +115,60 @@
     font-size: 14px;
     margin-left: 16px;
     margin-top: 2px;
+}
+
+.avatarImg {
+    height: 40px;
+    border-radius: 50px;
+    margin: 10px 5px 10px 5px;
+}
+
+.searchItem-Deatails {
+    display: flex;
+    flex-direction: column;
+}
+
+.contactItemLeft {
+    display: flex;
+    flex-direction: column;
+}
+
+.contactName {
+    font-size: 18px;
+    color: black;
+    margin: 8px 0 0 15px;
+}
+
+.lastMsg {
+    font-size: 13px;
+    color: black;
+    margin: 8px 0 0 16px;
+    font-family: 'Dosis', sans-serif;
+    color: #aa9b9b;
+}
+
+.contactItemRight {
+    display: flex;
+    flex-direction: column;
+    margin: 8px 5px 0 auto;
+}
+
+.lastMsgTime {
+    font-size: 11px;
+    font-family: 'Dosis', sans-serif;
+    color: gray;
+}
+
+.unreadMessages-badge {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #65bf58;
+    color: white;
+    margin: 8px 0px 0px auto;
+    border-radius: 50px;
+    width: 18px;
+    height: 18px;
+    font-size: 11px;
+    pointer-events: none;
 }

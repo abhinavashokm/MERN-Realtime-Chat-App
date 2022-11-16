@@ -34,9 +34,14 @@
 }
 
 @keyframes fadeIn {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
-}  
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
 
 .chat-header .status-offline {
     font-size: 12px;
@@ -85,6 +90,18 @@
     height: 100%;
     background: #e5ddd6;
     overflow-y: scroll;
+}
+
+.sendedMessageContainer {
+    display: flex;
+    margin: 5px 15px;
+    justify-content: flex-end;
+}
+
+.recievedMessageContainer {
+    display: flex;
+    margin: 5px 15px;
+    justify-content: flex-start;
 }
 
 .messageDiv {

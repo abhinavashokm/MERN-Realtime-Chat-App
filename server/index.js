@@ -9,9 +9,8 @@ const userHelper = require('./Helpers/UsersHelper')
 
 
 //MONGODB CONNCETION
-const mongoose = require('mongoose');
-const UsersHelper = require('./Helpers/UsersHelper');
-const { response } = require('express');
+const mongoose = require('mongoose')
+const UsersHelper = require('./Helpers/UsersHelper')
 mongoose.connect('mongodb://localhost:27017/ChatApp')
 
 //SOCKET.IO SETUP

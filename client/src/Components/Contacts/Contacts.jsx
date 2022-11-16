@@ -1,62 +1,32 @@
 import React, { useContext, useEffect, useState } from 'react'
 import './Contacts.css'
-import axios from 'axios'
 import { authContext } from '../../Auth/AuthContext'
-import { currentChatContext } from '../../Store/CurrentChat'
 import { contactListContext } from '../../Store/ContactList'
-import { confirmAlert } from 'react-confirm-alert'; // Import alert npm
-import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css for alert
 import InputField from '../InputField/InputField'
-import SavedContacts from './SubComponents/SavedContacts'
+import ContactList from './SubComponents/ContactList'
 import SearchResult from './SubComponents/SearchResult'
+import { getContactList } from '../../Helpers/HelperFunctions'
+import {authHelpers} from '../../Auth/AuthHelpers'
 
 
 function Contacts() {
 
-  const { user, setUser, socket } = useContext(authContext)
-  const { setCurrentChat } = useContext(currentChatContext)
+  const { user } = useContext(authContext)
   const { contactsList, setContactsList } = useContext(contactListContext)
+  const { logout } = useContext(authHelpers)
+  const [ search, setSearch ] = useState()
 
-  const [search, setSearch] = useState()
-
-  //for getting saved contacts
   useEffect(() => {
-    if (user) {
-      axios.post("http://localhost:3001/getContactList", { userId: user._id }).then((res) => {
-        if (!res.data) {
-          console.log("something went wrong")
-        } else {
-          let contacts = res.data.filter(contact => contact._id !== user._id)
-          setContactsList(contacts)
-        }
-      })
-    }
+    user && getContactList(user._id).then((List) => {
+      setContactsList(List)
+    })
   }, [user])
 
-  //fuction for signout current user
-  const logoutUser = () => {
-    confirmAlert({
-      title: 'Logout',
-      message: 'Are you sure want to logout,all chats you made will lost!',
-      buttons: [
-        {
-          label: 'Yes',
-          onClick: () => {
-            setCurrentChat(null)
-            socket.current.emit("removeUser", { userId: user._id })
-            setUser(null)
-            setContactsList(null)
-          }
-        },
-        {
-          label: 'No',
-          onClick: () => { }
-        }
-      ]
-    })
+  const logoutHelper = () => {
+    logout()
   }
 
-  const ContactlistSection = search ? <SearchResult props={{ search }} /> : <SavedContacts props={{ contactsList }} />
+  const ContactlistSection = search ? <SearchResult props={{ search }} /> : <ContactList props={{ contactsList }} />
 
   return (
     <div className='contacts-container'>
@@ -64,7 +34,7 @@ function Contacts() {
       <div className="profileBand">
         <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRA7ECizMinUV4oPQG6BUFIZZmeXehbj7pytQ&usqp=CAU" alt="person" />
         {user && <span>{user.FullName}</span>}
-        <button onClick={logoutUser} >Logout</button>
+        <button onClick={logoutHelper} >Logout</button>
       </div>
 
       <div className="contacts-searchBox">
@@ -73,7 +43,6 @@ function Contacts() {
           name="search"
           placeholder="Search..."
           className="search"
-          value={search}
           onChangeFunction={setSearch}
         />
       </div>
