@@ -3,7 +3,7 @@ import { currentChatContext } from '../../../Store/CurrentChat'
 import { unreadMessagesContext } from '../../../Store/UnreadMessages'
 import { chatsContext } from "../../../Store/ChatsContext"
 import { findOneUser } from '../../../Helpers/HelperFunctions'
-import { checkSelectedChat, checkUnreadMessage, setLastMessage } from '../../../Helpers/HelperFunctions'
+import { checkSelectedChat, checkUnreadMessage, getLastMessage, compareFn } from '../../../Helpers/HelperFunctions'
 
 function ContactList({ props }) {
 
@@ -15,11 +15,14 @@ function ContactList({ props }) {
     return (
         <div>
             {
-                contactsList && contactsList.map((contact, index) => {
+                contactsList && contactsList.sort((a, b) => {
+                    const result = compareFn(a, b, chats)
+                    return result
+                }).map((contact, index) => {
 
                     const unreadMessagesCount = checkUnreadMessage(unreadMessages, contact._id)
                     const selectedChat = currentChat && checkSelectedChat(contact._id, currentChat._id)
-                    const lastMessage = setLastMessage(contact._id, chats)
+                    const lastMessage = getLastMessage(contact._id, chats)
 
                     return (
                         <div

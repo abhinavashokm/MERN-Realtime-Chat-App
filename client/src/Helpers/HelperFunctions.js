@@ -54,9 +54,9 @@ const getAllUsers = (userId) => {
 }
 const checkUnreadMessage = (unreadMessages, contactId) => {
     const unreadMessagesCount = unreadMessages.filter(obj => obj.senderId === contactId).length
-    if(unreadMessagesCount < 1) {
+    if (unreadMessagesCount < 1) {
         return false
-    }else {
+    } else {
         return unreadMessagesCount
     }
 }
@@ -76,14 +76,35 @@ const getCurrentTime = () => {
     const currentTime = hours + ':' + minutes
     return currentTime
 }
-const setLastMessage = (contactId, chats) => {
+const getLastMessage = (contactId, chats) => {
     const lastMessage = [...chats].reverse().find(message => message.senderId === contactId || message.recieverId === contactId)
     return lastMessage
+}
+
+const compareFn = (A, B, chats) => {
+    const lastMessageOfA = getLastMessage(A._id, chats)
+    const lastMessageOfB = getLastMessage(B._id, chats)
+
+    //return positive - a comes after b   :b,a
+    //return negative - a comes before b  :a,b
+    //return 0        - no changes
+
+    if (lastMessageOfA && lastMessageOfB) {
+        //if (b is newest one) result will be positive - b,a (else) result will be negative - a,b
+        return new Date(lastMessageOfB.createdAt) - new Date(lastMessageOfA.createdAt);
+    } else if (lastMessageOfA && !lastMessageOfB) {
+        return -1
+    } else if (lastMessageOfB && !lastMessageOfA) {
+        return 1
+    }else {
+        return 0
+    }
 }
 
 
 export {
     findOneUser, getContactList, getAllUsers, getCurrentTime,
     addToContactList, isAlreadyInContactList, checkUnreadMessage,
-    checkSelectedChat, filterUnreadMessages, setLastMessage
+    checkSelectedChat, filterUnreadMessages, getLastMessage,
+    compareFn
 }

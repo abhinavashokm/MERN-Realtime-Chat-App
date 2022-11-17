@@ -55,10 +55,10 @@ io.on("connection", (socket) => {
     })
 
     //recieve private messages from sender and send it to the target user
-    socket.on("sendMessage", async ({ senderId, recieverId, msg, time }) => {
+    socket.on("sendMessage", async ({ senderId, recieverId, msg, time, createdAt }) => {
         const recieverUser = await userHelper.findUser(recieverId)
         if (recieverUser) {
-            io.to(recieverUser.socketId).emit("recieveMessage", { senderId, msg, recieverId, time })
+            io.to(recieverUser.socketId).emit("recieveMessage", { senderId, msg, recieverId, time, createdAt })
         }
     })
 

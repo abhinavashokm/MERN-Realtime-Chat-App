@@ -16,18 +16,21 @@ export const ChatHelperProvider = ({ children }) => {
     const sendMessage = async (message, senderId, recieverId) => {
         return new Promise((resolve) => {
             const currentHoursAndMinutes = getCurrentTime()
+            const date = new Date()
             socket.current.emit("sendMessage", {
                 senderId,
                 recieverId,
                 msg: message,
-                time: currentHoursAndMinutes
+                time: currentHoursAndMinutes,
+                createdAt: date
             })
             const messageObj = {
                 message,
                 senderId,
                 isYours: true,
                 recieverId,
-                time: currentHoursAndMinutes
+                time: currentHoursAndMinutes,
+                createdAt: date
             }
             resolve(messageObj)
         })
@@ -38,7 +41,8 @@ export const ChatHelperProvider = ({ children }) => {
             senderId: msgObj.senderId,
             recieverId: msgObj.recieverId,
             isYours: false,
-            time: msgObj.time
+            time: msgObj.time,
+            createdAt:msgObj.createdAt
         })
     }
     const actionsWhenNewMessage = (arrivalMessage, setArrivalMessage, setChats, setUnreadMessages) => {
