@@ -180,6 +180,24 @@ app.post('/addNewContact', (req, res) => {
             }
         })
 })
+app.post("/removeAContact",(req, res) => {
+    const { userId, contactId } = req.body
+
+    const filter = { UserId : userId }
+    const update = { Contacts : {_id : contactId} }
+    ContactListModel.findOneAndUpdate(filter, { $pull: update }, null,
+        (err) => {
+            if(!err) {
+
+                userHelper.getContactList(userId).then((contactList) => {
+                    if (contactList) {
+                        res.json(contactList)
+                    }
+                })
+            }
+        })
+
+})
 
 //PORT LISTENING
 httpServer.listen(3001, () => {

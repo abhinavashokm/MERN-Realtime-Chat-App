@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext } from 'react'
-import "./Chat.css"
 import { io } from 'socket.io-client';
 import { authContext } from '../../Auth/AuthContext';
 import { currentChatContext } from '../../Store/CurrentChat';
@@ -7,9 +6,10 @@ import { unreadMessagesContext } from '../../Store/UnreadMessages';
 import { contactListContext } from '../../Store/ContactList';
 import { chatsContext } from '../../Store/ChatsContext';
 import { chatHelper } from '../../Helpers/ChatHelper';
-import ChatBox from './SubComponents/ChatBox';
-import EmptyChat from './SubComponents/EmptyChat';
 import { isAlreadyInContactList, addToContactList } from '../../Helpers/HelperFunctions';
+import ChatBox from './Conditional/ChatBox';
+import EmptyChat from './Conditional/EmptyChat';
+import "./Chat.css"
 
 function Chat() {
 
@@ -56,8 +56,8 @@ function Chat() {
   //this fucnction for sending private message
   const handleMessageSubmit = async ({ message, setMessage }) => {
 
-    isAlreadyInContactList(contactsList, currentChat._id).then((newContact) => {
-      if (newContact) {
+    isAlreadyInContactList(contactsList, currentChat._id).then((oldContact) => {
+      if (!oldContact) {
         addToContactList(user._id, currentChat).then((newContactList) => {
           setContactsList(newContactList)
         })
@@ -70,14 +70,13 @@ function Chat() {
     })
 
   }
-
-  //in the initial state StartAchat component will show, when user selecting a chat Chatbox component will show
-  const chatSection = currentChat ? <ChatBox props={{ chats, handleMessageSubmit, onlineList }} />
-    : <EmptyChat />
-
+  
   return (
     <div className='MainChat-container' >
-      {chatSection}
+      {currentChat
+        ? <ChatBox props={{ chats, handleMessageSubmit, onlineList }} />
+        : <EmptyChat />
+      }
     </div>
 
   )

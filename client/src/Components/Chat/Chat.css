@@ -14,11 +14,17 @@
 
 .chat-header {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    justify-content: space-between;
     width: 100%;
     height: 60px;
     color: white;
     background-color: #00b3b7;
+}
+
+.chatDetails {
+    display: flex;
+    flex-direction: column;
 }
 
 .chat-header .person-name {
@@ -153,4 +159,73 @@
     color: #83a7a5;
     margin: 4px -6px -4px 12px;
     font-size: 11px;
+}
+
+/* DROP DOWN */
+
+.dropdown-container {
+    display: flex;
+    align-items: center;
+    margin-right: 8px;
+}
+
+.three-dots-container {
+    border-radius: 50px;
+    width: 21px;
+    height: 29px;
+}
+
+.three-dots-container:hover {
+    background-color: #00c8ff;
+}
+
+.three-dots:after {
+    cursor: pointer;
+    color: #fff;
+    content: '\2807';
+    font-size: 20px;
+    padding: 0 5px;
+}
+
+.dropdown div span {
+    color: black;
+    margin: 6px 0 6px 10px;
+}
+
+.dropdown div {
+    display: flex;
+    padding: 2px;
+    border-radius: 3px;
+}
+
+.dropdown div:hover {
+    background-color: #f1f1f1;
+}
+
+.dropdown {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    right: 10px;
+    background-color: #FFF;
+    outline: none;
+    opacity: 0;
+    z-index: -1;
+    max-height: 0;
+    transition: 0.1s;
+    margin: 100px 4px 0 0;
+    border-radius: 3px;
+    width: 95px;
+    cursor: pointer;
+}
+
+.dropdown-container:focus {
+    outline: none;
+}
+
+.dropdown-container:focus .dropdown {
+    opacity: 1;
+    z-index: 100;
+    max-height: 100vh;
+    transition: 0.2s;
 }

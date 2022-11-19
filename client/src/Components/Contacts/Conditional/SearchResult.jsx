@@ -19,7 +19,7 @@ function SearchResult({ props }) {
     }, [user])
 
     return (
-        <div>
+        <div className='contact-list' >
             {
                 allUsers.filter(contact => contact.FullName.toLowerCase().startsWith(search.toLowerCase()) || contact.UserName.toLowerCase().startsWith(search.toLowerCase()))
                     .map((contact, index) => {

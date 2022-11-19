@@ -2,10 +2,11 @@ import React, { useContext, useEffect, useState } from 'react'
 import { currentChatContext } from '../../../Store/CurrentChat';
 import { unreadMessagesContext } from '../../../Store/UnreadMessages';
 import { chatHelper } from '../../../Helpers/ChatHelper';
-import InputField from '../../InputField/InputField';
-import Message from './Message';
-import "../Chat.css"
 import { filterUnreadMessages } from '../../../Helpers/HelperFunctions';
+import ChatHeader from '../Items/Header';
+import ChatInput from '../Items/ChatInput';
+import Message from '../Items/Message';
+import "../Chat.css"
 
 function ChatBox({ props }) {
 
@@ -23,53 +24,27 @@ function ChatBox({ props }) {
         currentChat && setOnlineStatusHelper(onlineList, setOnlineStatus)
     }, [currentChat, onlineList])
 
-    //message sending helper
-    const messageSubmitHelper = (e) => {
-        e.preventDefault()
-        handleMessageSubmit({ message, setMessage })
-    }
-
     return (
         <div className='chat-container' >
-            <div className="chat-header">
 
-                {currentChat && <span className='person-name'>{currentChat.FullName}</span>}
+            <ChatHeader props={{ onlineStatus }} />
 
-                <span className={onlineStatus ? 'status-online' : 'status-offline'} >
-                    {onlineStatus ? "Online" : "last seen on "}
-                    {onlineStatus ? "" : <span className='last-seen' >{currentChat.LastSeen}</span>}
-                </span>
-
-            </div>
             <div className="messages-container">
                 {
-                    //on filter we check
-                    //is it recieved message by matching senderId and current chatting person's id 
-                    //or check is it sended message by matching recieverId and current chating person's id 
                     currentChat && [...chats].reverse().filter(message => message.senderId === currentChat._id || message.recieverId === currentChat._id)
                         .map((obj, index) => {
 
                             filterUnreadMessages(unreadMessages, obj.senderId, setUnreadMessages)
+                            
                             return (
                                 <Message key={index} messageObj={obj} />
                             )
                         })
                 }
             </div>
-            <div className="chatBox">
-                <div className="chatbox-container">
-                    <form onSubmit={messageSubmitHelper} >
-                        <InputField
-                            type="text"
-                            value={message}
-                            name="message"
-                            placeholder="type something..."
-                            className="chat-input"
-                            onChangeFunction={setMessage}
-                        />
-                    </form>
-                </div>
-            </div>
+
+            <ChatInput props={{ handleMessageSubmit, message, setMessage }} />
+
         </div >
     )
 }

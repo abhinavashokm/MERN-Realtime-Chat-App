@@ -22,9 +22,9 @@ const addToContactList = (userId, contactDetails) => {
 const isAlreadyInContactList = (contactsList, contactId) => {
     return new Promise((resolve) => {
         if (contactsList.some(contact => contact._id === contactId)) {
-            resolve(false)
-        } else {
             resolve(true)
+        } else {
+            resolve(false)
         }
     })
 }
