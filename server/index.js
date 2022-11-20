@@ -10,7 +10,8 @@ const userHelper = require('./Helpers/UsersHelper')
 
 //MONGODB CONNCETION
 const mongoose = require('mongoose')
-const UsersHelper = require('./Helpers/UsersHelper')
+const UsersHelper = require('./Helpers/UsersHelper');
+const { resolve4 } = require('dns/promises');
 mongoose.connect('mongodb://localhost:27017/ChatApp')
 
 //SOCKET.IO SETUP
@@ -66,7 +67,7 @@ io.on("connection", (socket) => {
 
 //ROUTERS
 //for fetching all contacts in the database
-app.get('/getAllContacts', (req, res) => {
+app.get('/getAllUsers', (req, res) => {
     UserModel.find({}, (err, data) => {
         if (err) {
             res.json(false)
@@ -137,7 +138,7 @@ app.post('/createUser', (req, res) => {
             const newUser = UserModel(user)
             await newUser.save()
 
-            const contact = { UserId: newUser._id, Contacts: [] }
+            const contact = { UserId: newUser._id, Contacts: [], Blocked: [] }
             const newContactList = ContactListModel(contact)
             await newContactList.save()
             res.json()
@@ -147,9 +148,9 @@ app.post('/createUser', (req, res) => {
 //return all saved contacts of the user
 app.post('/getContactList', async (req, res) => {
     const { userId } = req.body
-    UsersHelper.getContactList(userId).then((contactList) => {
-        if (contactList) {
-            res.json(contactList)
+    UsersHelper.getContactList(userId).then((result) => {
+        if (result) {
+            res.json(result)
         } else {
             res.json(false)
         }
@@ -171,33 +172,69 @@ app.post('/addNewContact', (req, res) => {
         (err) => {
             if (!err) {
 
-                userHelper.getContactList(userId).then((contactList) => {
-                    if (contactList) {
-                        res.json(contactList)
+                userHelper.getContactList(userId).then((result) => {
+                    if (result) {
+                        res.json(result.Contacts)
                     }
                 })
 
             }
         })
 })
-app.post("/removeAContact",(req, res) => {
+app.post("/removeAContact", (req, res) => {
     const { userId, contactId } = req.body
 
-    const filter = { UserId : userId }
-    const update = { Contacts : {_id : contactId} }
+    const filter = { UserId: userId }
+    const update = { Contacts: { _id: contactId } }
     ContactListModel.findOneAndUpdate(filter, { $pull: update }, null,
         (err) => {
-            if(!err) {
+            if (!err) {
 
-                userHelper.getContactList(userId).then((contactList) => {
-                    if (contactList) {
-                        res.json(contactList)
+                userHelper.getContactList(userId).then((result) => {
+                    if (result) {
+                        res.json(result.Contacts)
                     }
                 })
             }
         })
 
 })
+app.post("/blockAContact", (req, res) => {
+    const { contact, userId } = req.body
+
+    const filter = { UserId: userId }
+    const update = { Blocked: contact }
+    ContactListModel.findOneAndUpdate(filter, { $push: update }, null,
+        (err) => {
+            if (!err) {
+
+                userHelper.getContactList(userId).then((result) => {
+                    if (result) {
+                        res.json(result.Blocked)
+                    }
+                })
+
+            }
+        })
+})
+app.post("/unblockAContact", (req, res) => {
+    const { contactId, userId } = req.body
+
+    const filter = { UserId: userId }
+    const update = { Blocked: { _id: contactId } }
+    ContactListModel.findOneAndUpdate(filter, { $pull: update }, null,
+        (err) => {
+            if (!err) {
+
+                userHelper.getContactList(userId).then((result) => {
+                    if (result) {
+                        res.json(result.Blocked)
+                    }
+                })
+            }
+        })
+})
+// app.post("/getBlockedContacts",(req, res))
 
 //PORT LISTENING
 httpServer.listen(3001, () => {

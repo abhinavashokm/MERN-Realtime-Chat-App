@@ -78,7 +78,11 @@ module.exports = {
         return new Promise((resolve, reject) => {
             ContactListModel.find({ UserId: userId }, (err, data) => {
                 if (!err && data[0]) {
-                    resolve(data[0].Contacts)
+                    respone = {
+                        Contacts:data[0].Contacts,
+                        Blocked :data[0].Blocked
+                    }
+                    resolve(respone)
                 }
             })
         })

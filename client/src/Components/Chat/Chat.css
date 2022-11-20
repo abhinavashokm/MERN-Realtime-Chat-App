@@ -57,6 +57,14 @@
     animation: fadeIn 3s;
 }
 
+.status-blocked {
+    font-size: 13px;
+    margin: 5px 0 3px 30px;
+    color: rgb(255, 255, 255);
+    letter-spacing: 1.5px;
+    animation: fadeIn 3s;
+}
+
 .last-seen {
     font-size: 13px;
 }

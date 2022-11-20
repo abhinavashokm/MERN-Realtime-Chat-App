@@ -12,12 +12,13 @@ import SearchResult from './Conditional/SearchResult'
 function Contacts() {
 
   const { user } = useContext(authContext)
-  const { setContactsList } = useContext(contactListContext)
+  const { setContactsList, setBlockedList } = useContext(contactListContext)
   const [search, setSearch] = useState()
 
   useEffect(() => {
-    user && getContactList(user._id).then((List) => {
-      setContactsList(List)
+    user && getContactList(user._id).then((res) => {
+      setContactsList(res.contacts)
+      setBlockedList(res.blockedContacts)
     })
   }, [user])
 

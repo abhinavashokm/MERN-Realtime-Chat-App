@@ -19,14 +19,14 @@ function ContactList() {
                 contactsList && contactsList.sort((a, b) => {
                     return compareFn(a, b, chats)
                 })
-                .map((contact) => {
+                .map((contact, index) => {
 
                     const unreadMessagesCount = checkUnreadMessage(unreadMessages, contact._id)
                     const selectedChat = currentChat && checkSelectedChat(contact._id, currentChat._id)
                     const lastMessage = getLastMessage(contact._id, chats)
 
                     return (
-                        <Contact props={{contact, unreadMessagesCount, selectedChat, lastMessage}} key={contact._id} />
+                        <Contact props={{contact, unreadMessagesCount, selectedChat, lastMessage}} key={index} />
                     )
                 })
             }

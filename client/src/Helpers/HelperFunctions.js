@@ -28,21 +28,31 @@ const isAlreadyInContactList = (contactsList, contactId) => {
         }
     })
 }
+const isBlockedContact = (blockedList, contactId) => {
+    return new Promise((resolve) => {
+        if (blockedList && blockedList.some(contact => contact._id === contactId)) {
+            resolve(true)
+        } else {
+            resolve(false)
+        }
+    })
+}
 const getContactList = (userId) => {
     return new Promise((resolve) => {
         axios.post("http://localhost:3001/getContactList", { userId: userId }).then((res) => {
             if (!res.data) {
                 console.log("something went wrong")
             } else {
-                let contacts = res.data.filter(contact => contact._id !== userId)
-                resolve(contacts)
+                const contacts = res.data.Contacts
+                const blockedContacts = res.data.Blocked
+                resolve({ contacts, blockedContacts })
             }
         })
     })
 }
 const getAllUsers = (userId) => {
     return new Promise((resolve) => {
-        axios.get("http://localhost:3001/getAllContacts").then((res) => {
+        axios.get("http://localhost:3001/getAllUsers").then((res) => {
             if (!res.data) {
                 console.log("something went wrong")
             } else {
@@ -96,7 +106,7 @@ const compareFn = (A, B, chats) => {
         return -1
     } else if (lastMessageOfB && !lastMessageOfA) {
         return 1
-    }else {
+    } else {
         return 0
     }
 }
@@ -106,5 +116,5 @@ export {
     findOneUser, getContactList, getAllUsers, getCurrentTime,
     addToContactList, isAlreadyInContactList, checkUnreadMessage,
     checkSelectedChat, filterUnreadMessages, getLastMessage,
-    compareFn
+    compareFn, isBlockedContact
 }

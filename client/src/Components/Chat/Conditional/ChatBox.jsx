@@ -4,7 +4,7 @@ import { unreadMessagesContext } from '../../../Store/UnreadMessages';
 import { chatHelper } from '../../../Helpers/ChatHelper';
 import { filterUnreadMessages } from '../../../Helpers/HelperFunctions';
 import ChatHeader from '../Items/Header';
-import ChatInput from '../Items/ChatInput';
+import InputBox from '../Items/InputBox';
 import Message from '../Items/Message';
 import "../Chat.css"
 
@@ -14,6 +14,7 @@ function ChatBox({ props }) {
 
     const [message, setMessage] = useState("")
     const [onlineStatus, setOnlineStatus] = useState(false)
+    const [blocked, setBlocked] = useState(false)
 
     const { currentChat } = useContext(currentChatContext)
     const { unreadMessages, setUnreadMessages } = useContext(unreadMessagesContext)
@@ -27,7 +28,7 @@ function ChatBox({ props }) {
     return (
         <div className='chat-container' >
 
-            <ChatHeader props={{ onlineStatus }} />
+            <ChatHeader props={{ onlineStatus, blocked, setBlocked }} />
 
             <div className="messages-container">
                 {
@@ -43,7 +44,7 @@ function ChatBox({ props }) {
                 }
             </div>
 
-            <ChatInput props={{ handleMessageSubmit, message, setMessage }} />
+            <InputBox props={{ handleMessageSubmit, message, setMessage, setBlocked, blocked }} />
 
         </div >
     )

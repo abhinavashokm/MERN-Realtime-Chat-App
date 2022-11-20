@@ -9,6 +9,10 @@ const contactListSchema = new mongoose.Schema({
     Contacts: {
         type: Array,
         required: true
+    },
+    Blocked: {
+        type: Array,
+        required: true
     }
 })
 

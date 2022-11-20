@@ -12,7 +12,7 @@ export const chatHelper = createContext(null)
 export const ChatHelperProvider = ({ children }) => {
     const { socket, user } = useContext(authContext)
     const { currentChat, setCurrentChat } = useContext(currentChatContext)
-    const { contactsList, setContactsList } = useContext(contactListContext)
+    const { contactsList, setContactsList, blockedList, setBlockedList } = useContext(contactListContext)
 
     const sendMessage = async (message, senderId, recieverId) => {
         return new Promise((resolve) => {
@@ -47,6 +47,12 @@ export const ChatHelperProvider = ({ children }) => {
         })
     }
     const actionsWhenNewMessage = (arrivalMessage, setArrivalMessage, setChats, setUnreadMessages) => {
+
+        //1 check is the message from a blocked contact
+        if (blockedList.some(contact => contact._id === arrivalMessage.senderId)) {
+            setArrivalMessage(null)
+            return
+        }
 
         //1 update arrivalmessage
         setChats(c => [...c, arrivalMessage])
@@ -83,8 +89,26 @@ export const ChatHelperProvider = ({ children }) => {
         })
     }
 
+    const blockChat = (contact) => {
+        return new Promise((resolve) => {
+            axios.post("http://localhost:3001/blockAContact", { contact, userId: user._id }).then((blockList) => {
+                setBlockedList(blockList.data)
+                resolve(true)
+            })
+        })
+    }
+
+    const unblockChat = (contactId) => {
+        return new Promise((resolve) => {
+            axios.post("http://localhost:3001/unblockAContact", { contactId, userId: user._id }).then((blockList) => {
+                setBlockedList(blockList.data)
+                resolve(true)
+            })
+        })
+    }
+
     return (
-        <chatHelper.Provider value={{ sendMessage, recieveMessage, setOnlineStatusHelper, actionsWhenNewMessage, removeChat }} >
+        <chatHelper.Provider value={{ sendMessage, recieveMessage, setOnlineStatusHelper, actionsWhenNewMessage, removeChat, blockChat, unblockChat }} >
             {children}
         </chatHelper.Provider>
     )
