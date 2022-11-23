@@ -161,12 +161,31 @@
     display: none;
 }
 
+.msgDetails-Container {
+    display: flex;
+    justify-content: flex-end;
+    margin: 4px -6px -4px 12px;
+}
+
 .sended-time {
     display: flex;
     justify-content: flex-end;
     color: #83a7a5;
-    margin: 4px -6px -4px 12px;
+    margin-right: 3px;
     font-size: 11px;
+}
+
+.tick {
+    display: flex;
+}
+
+.clock {
+    height: 14px;
+}
+
+.single-tick {
+    height: 12px;
+    width: 11px;
 }
 
 /* DROP DOWN */

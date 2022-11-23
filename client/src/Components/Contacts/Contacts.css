@@ -145,6 +145,7 @@
     margin: 8px 0 0 16px;
     font-family: 'Dosis', sans-serif;
     color: #aa9b9b;
+    word-break: break-all;
 }
 
 .contactItemRight {

@@ -17,11 +17,12 @@ function Chat() {
   const { currentChat } = useContext(currentChatContext)
   const { setUnreadMessages } = useContext(unreadMessagesContext)
   const { contactsList, setContactsList } = useContext(contactListContext)
-  const { sendMessage, recieveMessage, actionsWhenNewMessage } = useContext(chatHelper)
+  const { sendMessage, recieveMessage, actionsWhenNewMessage, updateMessageSeen } = useContext(chatHelper)
   const { chats, setChats } = useContext(chatsContext)
 
   const [onlineList, setOnlineList] = useState()
   const [arrivalMessage, setArrivalMessage] = useState(null)
+  const [messageViewedContact, setMessageViewedContact] = useState()
 
   useEffect(() => {
     if (user) {
@@ -40,8 +41,20 @@ function Chat() {
         recieveMessage(msgDetails, setArrivalMessage)
       })
 
+      socket.current.on("messageViewedResponce",(senderId) => {
+        setMessageViewedContact(senderId)
+      })
+
     }
   }, [user, arrivalMessage, currentChat, socket])
+
+  useEffect(() => {
+    if(messageViewedContact) {
+    updateMessageSeen(messageViewedContact)
+    setMessageViewedContact(null)
+    }
+  }, [chats, messageViewedContact])
+  
 
   //update online users list
   socket.current && socket.current.on("usersChange", (users) => {
@@ -64,7 +77,7 @@ function Chat() {
       }
     })
 
-    sendMessage(message, user._id, currentChat._id).then((messageObj) => {
+    sendMessage(message, user._id, currentChat._id, onlineList).then((messageObj) => {
       setChats(c => [...c, messageObj])
       setMessage('')
     })

@@ -62,21 +62,15 @@ const getAllUsers = (userId) => {
         })
     })
 }
+const checkSelectedChat = (contactId, selectedChatId) => {
+    return contactId === selectedChatId
+}
 const checkUnreadMessage = (unreadMessages, contactId) => {
     const unreadMessagesCount = unreadMessages.filter(obj => obj.senderId === contactId).length
     if (unreadMessagesCount < 1) {
         return false
     } else {
         return unreadMessagesCount
-    }
-}
-const checkSelectedChat = (contactId, selectedChatId) => {
-    return contactId === selectedChatId
-}
-const filterUnreadMessages = (unreadMessages, senderId, setUnreadMessages) => {
-    if (unreadMessages.some(message => message.senderId === senderId)) {
-        const filter = unreadMessages.filter(message => message.senderId !== senderId)
-        setUnreadMessages(filter)
     }
 }
 const getCurrentTime = () => {
@@ -115,6 +109,6 @@ const compareFn = (A, B, chats) => {
 export {
     findOneUser, getContactList, getAllUsers, getCurrentTime,
     addToContactList, isAlreadyInContactList, checkUnreadMessage,
-    checkSelectedChat, filterUnreadMessages, getLastMessage,
+    checkSelectedChat, getLastMessage,
     compareFn, isBlockedContact
 }

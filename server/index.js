@@ -63,6 +63,14 @@ io.on("connection", (socket) => {
         }
     })
 
+    //message seened responce
+    socket.on("messageViewed", async ({recieverId,senderId}) => {
+        const recieverUser = await userHelper.findUser(recieverId)
+        if(recieverUser) {
+        io.to(recieverUser.socketId).emit("messageViewedResponce",senderId)
+        }
+    })
+
 })
 
 //ROUTERS

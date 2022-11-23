@@ -1,8 +1,10 @@
 import { createContext, useContext } from "react";
 import { getCurrentTime } from "./HelperFunctions"
 import { authContext } from "../Auth/AuthContext";
+import { chatsContext } from "../Store/ChatsContext";
 import { currentChatContext } from "../Store/CurrentChat";
 import { contactListContext } from "../Store/ContactList";
+import { unreadMessagesContext } from "../Store/UnreadMessages";
 import { isAlreadyInContactList, addToContactList, findOneUser } from "./HelperFunctions";
 import axios from "axios";
 
@@ -13,8 +15,10 @@ export const ChatHelperProvider = ({ children }) => {
     const { socket, user } = useContext(authContext)
     const { currentChat, setCurrentChat } = useContext(currentChatContext)
     const { contactsList, setContactsList, blockedList, setBlockedList } = useContext(contactListContext)
+    const { chats, setChats } = useContext(chatsContext)
+    const { unreadMessages, setUnreadMessages } = useContext(unreadMessagesContext)
 
-    const sendMessage = async (message, senderId, recieverId) => {
+    const sendMessage = async (message, senderId, recieverId, onlineList) => {
         return new Promise((resolve) => {
             const currentHoursAndMinutes = getCurrentTime()
             const date = new Date()
@@ -25,13 +29,15 @@ export const ChatHelperProvider = ({ children }) => {
                 time: currentHoursAndMinutes,
                 createdAt: date
             })
+            const onlineStatus = onlineList.some(user => user.userId === recieverId)
             const messageObj = {
                 message,
                 senderId,
                 isYours: true,
                 recieverId,
                 time: currentHoursAndMinutes,
-                createdAt: date
+                createdAt: date,
+                seen: onlineStatus ? "deliverd" : false
             }
             resolve(messageObj)
         })
@@ -54,15 +60,21 @@ export const ChatHelperProvider = ({ children }) => {
             return
         }
 
-        //1 update arrivalmessage
+        //2 update arrivalmessage
         setChats(c => [...c, arrivalMessage])
 
-        //2 check and update unread messages
+        //3 check and update unread messages
         if (!currentChat || arrivalMessage.senderId !== currentChat._id) {
             setUnreadMessages(d => [...d, arrivalMessage])
+        } else {
+            socket.current.emit("messageViewed",
+                {
+                    recieverId: arrivalMessage.senderId,
+                    senderId: arrivalMessage.recieverId
+                })
         }
 
-        //3 check is the message from unsaved contact or not, then update the contactList 
+        //4 check is the message from unsaved contact or not, then update the contactList 
         isAlreadyInContactList(contactsList, arrivalMessage.senderId).then((oldContact) => {
             if (!oldContact) {
                 findOneUser(arrivalMessage.senderId).then((contactDetails) => {
@@ -73,10 +85,21 @@ export const ChatHelperProvider = ({ children }) => {
             }
         })
 
-        //4 set arrivalMessage state back to null
+        //5 set arrivalMessage state back to null
         setArrivalMessage(null)
 
     }
+
+    const updateMessageSeen = (contactId) => {
+        chats.forEach(element => {
+            if (element.isYours && element.recieverId === contactId) {
+                element.seen = true
+            }
+            return element
+        })
+        setChats(chats)
+    }
+
     const setOnlineStatusHelper = (onlineList, setOnlineStatus) => {
         const status = onlineList.some(user => user.userId === currentChat._id)
         setOnlineStatus(status)
@@ -106,9 +129,22 @@ export const ChatHelperProvider = ({ children }) => {
             })
         })
     }
+    const removeViewedUnreadMessages = (contactId) => {
+        //clear unreadmessage which seen in this contact
+        if (unreadMessages.some(message => message.senderId === contactId)) {
+
+            socket.current.emit("messageViewed",
+                {
+                    recieverId: contactId,
+                    senderId: user._id
+                })
+
+            setUnreadMessages(unreadMessages.filter(message => message.senderId !== contactId))
+        }
+    }
 
     return (
-        <chatHelper.Provider value={{ sendMessage, recieveMessage, setOnlineStatusHelper, actionsWhenNewMessage, removeChat, blockChat, unblockChat }} >
+        <chatHelper.Provider value={{ sendMessage, recieveMessage, setOnlineStatusHelper, actionsWhenNewMessage, removeChat, blockChat, unblockChat, updateMessageSeen, removeViewedUnreadMessages }} >
             {children}
         </chatHelper.Provider>
     )

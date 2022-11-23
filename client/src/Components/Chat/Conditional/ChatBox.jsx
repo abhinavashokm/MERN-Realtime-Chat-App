@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from 'react'
 import { currentChatContext } from '../../../Store/CurrentChat';
 import { unreadMessagesContext } from '../../../Store/UnreadMessages';
 import { chatHelper } from '../../../Helpers/ChatHelper';
-import { filterUnreadMessages } from '../../../Helpers/HelperFunctions';
 import ChatHeader from '../Items/Header';
 import InputBox from '../Items/InputBox';
 import Message from '../Items/Message';
@@ -17,8 +16,7 @@ function ChatBox({ props }) {
     const [blocked, setBlocked] = useState(false)
 
     const { currentChat } = useContext(currentChatContext)
-    const { unreadMessages, setUnreadMessages } = useContext(unreadMessagesContext)
-    const { setOnlineStatusHelper } = useContext(chatHelper)
+    const { setOnlineStatusHelper, removeViewedUnreadMessages } = useContext(chatHelper)
 
     //for setting current chatting persons online status
     useEffect(() => {
@@ -35,8 +33,8 @@ function ChatBox({ props }) {
                     currentChat && [...chats].reverse().filter(message => message.senderId === currentChat._id || message.recieverId === currentChat._id)
                         .map((obj, index) => {
 
-                            filterUnreadMessages(unreadMessages, obj.senderId, setUnreadMessages)
-                            
+                            removeViewedUnreadMessages(obj.senderId)
+
                             return (
                                 <Message key={index} messageObj={obj} />
                             )
@@ -44,7 +42,7 @@ function ChatBox({ props }) {
                 }
             </div>
 
-            <InputBox props={{ handleMessageSubmit, message, setMessage, setBlocked, blocked }} />
+            <InputBox props={{ handleMessageSubmit, message, setMessage, setBlocked, blocked, onlineStatus }} />
 
         </div >
     )

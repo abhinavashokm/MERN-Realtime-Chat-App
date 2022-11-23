@@ -7,13 +7,12 @@ import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css for aler
 
 function InputBox({ props }) {
 
-    const { handleMessageSubmit, message, setMessage, setBlocked, blocked } = props
+    const { handleMessageSubmit, message, setMessage, setBlocked, blocked, onlineStatus } = props
     const { currentChat } = useContext(currentChatContext)
     const { unblockChat } = useContext(chatHelper)
 
     const messageSubmitHelper = (e) => {
         e.preventDefault()
-
         if (!blocked) {
             handleMessageSubmit({ message, setMessage })
         } else {
