@@ -6,7 +6,7 @@ import { unreadMessagesContext } from '../../Store/UnreadMessages';
 import { contactListContext } from '../../Store/ContactList';
 import { chatsContext } from '../../Store/ChatsContext';
 import { chatHelper } from '../../Helpers/ChatHelper';
-import { isAlreadyInContactList, addToContactList } from '../../Helpers/HelperFunctions';
+import { addToContactList } from '../../Helpers/HelperFunctions';
 import ChatBox from './Conditional/ChatBox';
 import EmptyChat from './Conditional/EmptyChat';
 import "./Chat.css"
@@ -16,13 +16,13 @@ function Chat() {
   const { user, socket } = useContext(authContext)
   const { currentChat } = useContext(currentChatContext)
   const { setUnreadMessages } = useContext(unreadMessagesContext)
-  const { contactsList, setContactsList } = useContext(contactListContext)
-  const { sendMessage, recieveMessage, actionsWhenNewMessage, updateMessageSeen } = useContext(chatHelper)
+  const { setContactsList } = useContext(contactListContext)
+  const { sendMessage, recieveMessage, updateMessageSeen, sendPendingMessagesHelper, addToPendingMessages, isAlreadyInContactList } = useContext(chatHelper)
   const { chats, setChats } = useContext(chatsContext)
 
   const [onlineList, setOnlineList] = useState()
-  const [arrivalMessage, setArrivalMessage] = useState(null)
   const [messageViewedContact, setMessageViewedContact] = useState()
+  const [pendingMessages, setPendingMessages] = useState([])
 
   useEffect(() => {
     if (user) {
@@ -38,38 +38,42 @@ function Chat() {
       })
 
       socket.current.on("recieveMessage", (msgDetails) => {
-        recieveMessage(msgDetails, setArrivalMessage)
+
+        recieveMessage(msgDetails, setChats, setUnreadMessages)
+
       })
 
-      socket.current.on("messageViewedResponce",(senderId) => {
+      socket.current.on("messageViewedResponce", (senderId) => {
         setMessageViewedContact(senderId)
       })
 
     }
-  }, [user, arrivalMessage, currentChat, socket])
+  }, [user, currentChat, socket])
 
   useEffect(() => {
-    if(messageViewedContact) {
-    updateMessageSeen(messageViewedContact)
-    setMessageViewedContact(null)
+    if (messageViewedContact) {
+      updateMessageSeen(messageViewedContact)
+      setMessageViewedContact(null)
     }
   }, [chats, messageViewedContact])
-  
+
+  //for sending pending messages
+  useEffect(() => {
+    if (onlineList && onlineList.length > 1 && pendingMessages.length > 0) {
+      sendPendingMessagesHelper(onlineList, pendingMessages)
+    }
+  }, [onlineList])
+
 
   //update online users list
   socket.current && socket.current.on("usersChange", (users) => {
     setOnlineList(users)
   })
 
-  useEffect(() => {
-    arrivalMessage && actionsWhenNewMessage(arrivalMessage, setArrivalMessage, setChats, setUnreadMessages)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [arrivalMessage])
-
   //this fucnction for sending private message
   const handleMessageSubmit = async ({ message, setMessage }) => {
 
-    isAlreadyInContactList(contactsList, currentChat._id).then((oldContact) => {
+    isAlreadyInContactList(currentChat._id).then((oldContact) => {
       if (!oldContact) {
         addToContactList(user._id, currentChat).then((newContactList) => {
           setContactsList(newContactList)
@@ -80,10 +84,13 @@ function Chat() {
     sendMessage(message, user._id, currentChat._id, onlineList).then((messageObj) => {
       setChats(c => [...c, messageObj])
       setMessage('')
+    }).catch((messageObj) => {
+      setChats(c => [...c, messageObj])
+      addToPendingMessages(messageObj, pendingMessages, setPendingMessages,)
+      setMessage('')
     })
 
   }
-  
   return (
     <div className='MainChat-container' >
       {currentChat

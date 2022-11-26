@@ -2,13 +2,13 @@ import React, { useContext, useState, useEffect } from 'react'
 import { currentChatContext } from '../../../Store/CurrentChat'
 import { contactListContext } from '../../../Store/ContactList'
 import { chatHelper } from '../../../Helpers/ChatHelper'
-import { isAlreadyInContactList, isBlockedContact } from '../../../Helpers/HelperFunctions'
+import { isBlockedContact } from '../../../Helpers/HelperFunctions'
 
 function Header({ props }) {
 
     const { onlineStatus, blocked, setBlocked } = props
     const { currentChat } = useContext(currentChatContext)
-    const { removeChat, blockChat, unblockChat } = useContext(chatHelper)
+    const { removeChat, blockChat, unblockChat, isAlreadyInContactList } = useContext(chatHelper)
     const { contactsList, blockedList } = useContext(contactListContext)
     const [alreadyInChat, setAlreadyInChat] = useState(false)
 
@@ -26,7 +26,7 @@ function Header({ props }) {
         })
     }
     useEffect(() => {
-        isAlreadyInContactList(contactsList, currentChat._id).then((res) => {
+        isAlreadyInContactList(currentChat._id).then((res) => {
             setAlreadyInChat(res)
         })
         isBlockedContact(blockedList, currentChat._id).then((res) => {

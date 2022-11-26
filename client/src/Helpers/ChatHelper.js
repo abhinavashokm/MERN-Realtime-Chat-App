@@ -5,7 +5,7 @@ import { chatsContext } from "../Store/ChatsContext";
 import { currentChatContext } from "../Store/CurrentChat";
 import { contactListContext } from "../Store/ContactList";
 import { unreadMessagesContext } from "../Store/UnreadMessages";
-import { isAlreadyInContactList, addToContactList, findOneUser } from "./HelperFunctions";
+import { addToContactList, findOneUser, getContactList } from "./HelperFunctions";
 import axios from "axios";
 
 //CONTEXT
@@ -14,22 +14,16 @@ export const chatHelper = createContext(null)
 export const ChatHelperProvider = ({ children }) => {
     const { socket, user } = useContext(authContext)
     const { currentChat, setCurrentChat } = useContext(currentChatContext)
-    const { contactsList, setContactsList, blockedList, setBlockedList } = useContext(contactListContext)
+    const { setContactsList, blockedList, setBlockedList } = useContext(contactListContext)
     const { chats, setChats } = useContext(chatsContext)
     const { unreadMessages, setUnreadMessages } = useContext(unreadMessagesContext)
 
     const sendMessage = async (message, senderId, recieverId, onlineList) => {
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
             const currentHoursAndMinutes = getCurrentTime()
             const date = new Date()
-            socket.current.emit("sendMessage", {
-                senderId,
-                recieverId,
-                msg: message,
-                time: currentHoursAndMinutes,
-                createdAt: date
-            })
-            const onlineStatus = onlineList.some(user => user.userId === recieverId)
+            const recieverIsOnline = onlineList.some(user => user.userId === recieverId)
+
             const messageObj = {
                 message,
                 senderId,
@@ -37,26 +31,88 @@ export const ChatHelperProvider = ({ children }) => {
                 recieverId,
                 time: currentHoursAndMinutes,
                 createdAt: date,
-                seen: onlineStatus ? "deliverd" : false
+                seen: recieverIsOnline ? "deliverd" : false
             }
-            resolve(messageObj)
+            if (recieverIsOnline) {
+                socket.current.emit("sendMessage", {
+                    senderId,
+                    recieverId,
+                    msg: message,
+                    time: currentHoursAndMinutes,
+                    createdAt: date
+                })
+
+                resolve(messageObj)
+            } else {
+                reject(messageObj)
+            }
         })
     }
-    const recieveMessage = (msgObj, setArrivalMessage) => {
-        setArrivalMessage({
+    const addToPendingMessages = (messsageObj, pendingMessages, setPendingMessages) => {
+        if (!(pendingMessages.some(element => element.contactId === messsageObj.recieverId))) {
+            setPendingMessages(c => [...c,
+            {
+                contactId: messsageObj.recieverId,
+                messages: [messsageObj]
+            }
+            ])
+        } else {
+            const objIndex = pendingMessages.findIndex(element => element.contactId === messsageObj.recieverId)
+            if (pendingMessages[objIndex].messages) {
+                pendingMessages[objIndex].messages.push(messsageObj)
+            }
+
+        }
+    }
+    const sendPendingMessagesHelper = (onlineList, pendingMessages) => {
+        pendingMessages.forEach((obj, index) => {
+            const finded = onlineList.some(user => user.userId === obj.contactId)
+            if (finded) {
+                const messagesToSend = pendingMessages[index].messages
+                messageDeliverdUpdate(obj.contactId)
+                messagesToSend.forEach(async (message) => {
+                    await sendPendingMessage(message).then(() => {
+                        pendingMessages.splice(index, 1)
+                    })
+                })
+            }
+            return
+        })
+    }
+    const messageDeliverdUpdate = (contactId) => {
+        chats.forEach((element) => {
+            if (element.recieverId === contactId) {
+                element.seen = "deliverd"
+            }
+        })
+    }
+    const sendPendingMessage = (messageObj) => {
+        return new Promise((resolve) => {
+            socket.current.emit("sendMessage", {
+                senderId: messageObj.senderId,
+                recieverId: messageObj.recieverId,
+                msg: messageObj.message,
+                time: messageObj.time,
+                createdAt: messageObj.createdAt
+            })
+            resolve()
+        })
+    }
+    const recieveMessage = (msgObj, setChats, setUnreadMessages) => {
+        const arrivalMessage = {
             message: msgObj.msg,
             senderId: msgObj.senderId,
             recieverId: msgObj.recieverId,
             isYours: false,
             time: msgObj.time,
             createdAt: msgObj.createdAt
-        })
+        }
+        actionsWhenNewMessage(arrivalMessage, setChats, setUnreadMessages)
     }
-    const actionsWhenNewMessage = (arrivalMessage, setArrivalMessage, setChats, setUnreadMessages) => {
+    const actionsWhenNewMessage = (arrivalMessage, setChats, setUnreadMessages) => {
 
         //1 check is the message from a blocked contact
         if (blockedList.some(contact => contact._id === arrivalMessage.senderId)) {
-            setArrivalMessage(null)
             return
         }
 
@@ -75,7 +131,7 @@ export const ChatHelperProvider = ({ children }) => {
         }
 
         //4 check is the message from unsaved contact or not, then update the contactList 
-        isAlreadyInContactList(contactsList, arrivalMessage.senderId).then((oldContact) => {
+        isAlreadyInContactList(arrivalMessage.senderId).then((oldContact) => {
             if (!oldContact) {
                 findOneUser(arrivalMessage.senderId).then((contactDetails) => {
                     addToContactList(user._id, contactDetails).then((newContactList) => {
@@ -84,9 +140,6 @@ export const ChatHelperProvider = ({ children }) => {
                 })
             }
         })
-
-        //5 set arrivalMessage state back to null
-        setArrivalMessage(null)
 
     }
 
@@ -142,9 +195,26 @@ export const ChatHelperProvider = ({ children }) => {
             setUnreadMessages(unreadMessages.filter(message => message.senderId !== contactId))
         }
     }
+    const isAlreadyInContactList = (contactId) => {
+        return new Promise((resolve) => {
+            getContactList(user._id).then(({ contacts }) => {
+
+                if (contacts.some(contact => contact._id === contactId)) {
+                    resolve(true)
+                } else {
+                    resolve(false)
+                }
+
+            })
+        })
+    }
 
     return (
-        <chatHelper.Provider value={{ sendMessage, recieveMessage, setOnlineStatusHelper, actionsWhenNewMessage, removeChat, blockChat, unblockChat, updateMessageSeen, removeViewedUnreadMessages }} >
+        <chatHelper.Provider value={{
+            sendMessage, recieveMessage, setOnlineStatusHelper, actionsWhenNewMessage,
+            removeChat, blockChat, unblockChat, updateMessageSeen, removeViewedUnreadMessages,
+            sendPendingMessagesHelper, addToPendingMessages, isAlreadyInContactList
+        }} >
             {children}
         </chatHelper.Provider>
     )

@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { currentChatContext } from '../../../Store/CurrentChat';
-import { unreadMessagesContext } from '../../../Store/UnreadMessages';
 import { chatHelper } from '../../../Helpers/ChatHelper';
 import ChatHeader from '../Items/Header';
 import InputBox from '../Items/InputBox';

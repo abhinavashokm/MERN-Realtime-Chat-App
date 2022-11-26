@@ -19,15 +19,7 @@ const addToContactList = (userId, contactDetails) => {
         })
     })
 }
-const isAlreadyInContactList = (contactsList, contactId) => {
-    return new Promise((resolve) => {
-        if (contactsList.some(contact => contact._id === contactId)) {
-            resolve(true)
-        } else {
-            resolve(false)
-        }
-    })
-}
+
 const isBlockedContact = (blockedList, contactId) => {
     return new Promise((resolve) => {
         if (blockedList && blockedList.some(contact => contact._id === contactId)) {
@@ -108,7 +100,7 @@ const compareFn = (A, B, chats) => {
 
 export {
     findOneUser, getContactList, getAllUsers, getCurrentTime,
-    addToContactList, isAlreadyInContactList, checkUnreadMessage,
+    addToContactList, checkUnreadMessage,
     checkSelectedChat, getLastMessage,
     compareFn, isBlockedContact
 }
