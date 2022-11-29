@@ -23,7 +23,7 @@ function Contacts() {
   }, [user])
 
   return (
-    <div className='contacts-container'>
+    <div className='Contacts-Section'>
 
       <Profile />
 

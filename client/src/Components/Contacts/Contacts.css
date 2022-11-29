@@ -1,4 +1,6 @@
-.contacts-container {
+/*MAIN CONTAINER */
+
+.Contacts-Section {
     display: flex;
     flex-direction: column;
     flex: 1.6;
@@ -6,42 +8,30 @@
     background-color: #fff;
 }
 
-.contacts-searchBox {
-    background-color: #1434A4;
-}
+/* 1. PROFILE */
 
-.contacts-searchBox .search {
-    width: 96%;
-    height: 32px;
-    margin: 2%;
-    padding: 9px 4px 9px 40px;
-    border-radius: 4px;
-    border: none;
-    outline: none;
-    background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' class='bi bi-search' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'%3E%3C/path%3E%3C/svg%3E") no-repeat 13px center;
-}
-
-.profileBand {
+.Profile {
     display: flex;
+    align-items: center;
     height: 60px;
     background-color: #fff;
     background: #1434A4;
+    padding-top: 5px;
 }
 
-.profileBand span {
+.Profile span {
     font-size: 28px;
-    margin: 10px 0 0 40px;
+    margin-left: 5px;
     color: white;
 }
 
-.profileBand img {
-    height: 50px;
-    margin: 5px;
+.Profile img {
+    height: 63px;
     border-radius: 50px;
-    margin-left: 7px;
+    margin-left: 5px;
 }
 
-.profileBand button {
+.Profile button {
     background-color: blue;
     color: white;
     height: 32px;
@@ -53,15 +43,37 @@
     box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1)
 }
 
-.contact-list {
-    background: white;
+/* 2.SEARCH BOX */
+
+.SearchBox {
+    background-color: #1434A4;
 }
 
-.contact-list :hover {
+.SearchBox .inputField {
+    width: 96%;
+    height: 32px;
+    margin: 2%;
+    padding: 9px 4px 9px 40px;
+    border-radius: 4px;
+    border: none;
+    outline: none;
+    background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' class='bi bi-search' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'%3E%3C/path%3E%3C/svg%3E") no-repeat 13px center;
+}
+
+/* 3.CONTACT LIST */
+.Contact-List {
+    background: white;
+    overflow-y: scroll;
+    scrollbar-width: none;
+}
+
+.Contact-List :hover {
     background-color: #f1f1f1;
 }
 
-.contact-item {
+/* 4.CONTACT (CONDITION 1) */
+
+.Contact {
     display: flex;
     flex-direction: row;
     border-bottom: 1px solid #f2f2f2;
@@ -71,7 +83,7 @@
     cursor: pointer;
 }
 
-.selected-contact-item {
+.Contact-Selected {
     display: flex;
     flex-direction: row;
     border-bottom: 1px solid #f2f2f2;
@@ -81,56 +93,20 @@
     pointer-events: none;
 }
 
-.selected-contact-item span {
+.Contact-Selected span {
     color: white;
 }
 
-.search-contact-item {
-    display: flex;
-    flex-direction: row;
-    border-bottom: 1px solid #f2f2f2;
-    width: 100%;
-    height: 60px;
-    background: white;
-    cursor: pointer;
-}
-
-.search-contactName {
-    font-size: 18px;
-    color: black;
-    margin: 6px 0 0 15px;
-}
-
-.selected-search-contact-item {
-    display: flex;
-    flex-direction: row;
-    border-bottom: 1px solid #f2f2f2;
-    width: 100%;
-    height: 60px;
-    background: #00bfff;
-    pointer-events: none;
-}
-
-.userName {
-    font-size: 14px;
-    margin-left: 16px;
-    margin-top: 2px;
-}
-
-.avatarImg {
+.contact-avtar-img {
     height: 40px;
     border-radius: 50px;
     margin: 10px 5px 10px 5px;
 }
 
-.searchItem-Deatails {
+.ContactLeftDiv {
     display: flex;
     flex-direction: column;
-}
-
-.contactItemLeft {
-    display: flex;
-    flex-direction: column;
+    width: 100%;
 }
 
 .contactName {
@@ -146,9 +122,14 @@
     font-family: 'Dosis', sans-serif;
     color: #aa9b9b;
     word-break: break-all;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 100%;
+    width: 50px;
 }
 
-.contactItemRight {
+.ContactRightDiv {
     display: flex;
     flex-direction: column;
     margin: 8px 5px 0 auto;
@@ -173,3 +154,55 @@
     font-size: 11px;
     pointer-events: none;
 }
+
+/* 4.CONTACT (CONDITION 2 - when searching) */
+
+.Suggestion-Contact {
+    display: flex;
+    flex-direction: row;
+    border-bottom: 1px solid #f2f2f2;
+    width: 100%;
+    height: 60px;
+    background: white;
+    cursor: pointer;
+}
+
+.Suggestion-Contact-Selected {
+    display: flex;
+    flex-direction: row;
+    border-bottom: 1px solid #f2f2f2;
+    width: 100%;
+    height: 60px;
+    background: #00bfff;
+    pointer-events: none;
+}
+
+.suggestion-contact-avatar-img {
+    height: 40px;
+    border-radius: 50px;
+    margin: 10px 5px 10px 5px;
+}
+
+.Suggestion-Details-Container {
+    display: flex;
+    flex-direction: column;
+}
+
+.Suggestion-Name {
+    font-size: 18px;
+    color: black;
+    margin: 6px 0 0 15px;
+}
+
+.Suggestion-UserName {
+    font-size: 14px;
+    margin-left: 16px;
+    margin-top: 2px;
+}
+
+
+
+
+
+
+

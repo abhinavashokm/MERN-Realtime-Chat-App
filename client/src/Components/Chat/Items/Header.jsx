@@ -39,7 +39,7 @@ function Header({ props }) {
     return (
         <div className="chat-header">
 
-            <div className="chatDetails">
+            <div className="chat-details">
                 {currentChat && <span className='person-name'>{currentChat.FullName}</span>}
                 {blocked ?
 

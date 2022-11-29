@@ -14,7 +14,7 @@ function ContactList() {
     const { chats } = useContext(chatsContext)
 
     return (
-        <div className='contact-list' >
+        <div className='Contact-List' >
             {
                 contactsList && contactsList.sort((a, b) => {
                     return compareFn(a, b, chats)

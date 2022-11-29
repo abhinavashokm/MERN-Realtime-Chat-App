@@ -17,7 +17,7 @@ function Chat() {
   const { currentChat } = useContext(currentChatContext)
   const { setUnreadMessages } = useContext(unreadMessagesContext)
   const { setContactsList } = useContext(contactListContext)
-  const { sendMessage, recieveMessage, updateMessageSeen, sendPendingMessagesHelper, addToPendingMessages, isAlreadyInContactList } = useContext(chatHelper)
+  const { sendMessage, recieveMessage, messageSeenedUpdate, sendPendingMessagesHelper, addToPendingMessages, isAlreadyInContactList } = useContext(chatHelper)
   const { chats, setChats } = useContext(chatsContext)
 
   const [onlineList, setOnlineList] = useState()
@@ -52,7 +52,7 @@ function Chat() {
 
   useEffect(() => {
     if (messageViewedContact) {
-      updateMessageSeen(messageViewedContact)
+      messageSeenedUpdate(messageViewedContact)
       setMessageViewedContact(null)
     }
   }, [chats, messageViewedContact])
@@ -92,7 +92,7 @@ function Chat() {
 
   }
   return (
-    <div className='MainChat-container' >
+    <div className='Chat-Section' >
       {currentChat
         ? <ChatBox props={{ chats, handleMessageSubmit, onlineList }} />
         : <EmptyChat />

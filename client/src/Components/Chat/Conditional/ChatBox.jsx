@@ -23,11 +23,11 @@ function ChatBox({ props }) {
     }, [currentChat, onlineList])
 
     return (
-        <div className='chat-container' >
+        <div className='Chats-Container' >
 
             <ChatHeader props={{ onlineStatus, blocked, setBlocked }} />
 
-            <div className="messages-container">
+            <div className="Messages-Container">
                 {
                     currentChat && [...chats].reverse().filter(message => message.senderId === currentChat._id || message.recieverId === currentChat._id)
                         .map((obj, index) => {

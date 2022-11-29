@@ -1,16 +1,44 @@
-.MainChat-container {
+/* Main Container */
+
+.Chat-Section {
     display: flex;
     flex: 3;
 }
 
+/* Chat (Condition 1 - empty chat) */
 
-.chat-container {
+.EmptyChat-Container {
+    display: flex;
+    flex-direction: column;
+    flex: 3;
+    height: 100%;
+    background-color: #d4dee9;
+    justify-content: center;
+    align-items: center;
+}
+
+.Emptychat-Message {
+    display: flex;
+    background-color: #4ae2fb;
+    width: 260px;
+    height: 30px;
+    border-radius: 50px;
+    justify-content: center;
+    align-items: center;
+    font-size: 15px;
+}
+
+/* Chat (Condition 2 - with chat) */
+
+.Chats-Container {
     display: flex;
     flex-direction: column;
     flex: 3;
     height: 100%;
     background-color: #f6f7f8;
 }
+
+/* 1.Chat Header */
 
 .chat-header {
     display: flex;
@@ -22,17 +50,25 @@
     background-color: #00b3b7;
 }
 
-.chatDetails {
+.chat-details {
     display: flex;
     flex-direction: column;
 }
 
-.chat-header .person-name {
+.person-name {
     font-size: 20px;
     margin: 10px 0 0px 30px;
 }
 
-.chat-header .status-online {
+.status-blocked {
+    font-size: 13px;
+    margin: 5px 0 3px 30px;
+    color: rgb(255, 255, 255);
+    letter-spacing: 1.5px;
+    animation: fadeIn 3s;
+}
+
+.status-online {
     font-size: 13px;
     margin: 5px 0 3px 31px;
     color: #3DFF2E;
@@ -57,138 +93,11 @@
     animation: fadeIn 3s;
 }
 
-.status-blocked {
-    font-size: 13px;
-    margin: 5px 0 3px 30px;
-    color: rgb(255, 255, 255);
-    letter-spacing: 1.5px;
-    animation: fadeIn 3s;
-}
-
 .last-seen {
     font-size: 13px;
 }
 
-.chatBox {
-    display: flex;
-    flex-direction: row;
-    background-color: #f0f0f0;
-    padding: 10px;
-    margin-top: auto;
-    height: 40px;
-}
-
-.chatbox-container {
-    display: flex;
-    flex-direction: row;
-    background-color: white;
-    width: 100%;
-    border-radius: 16px;
-    padding: 7px 10px 8px 8px;
-}
-
-.chatbox-container form {
-    width: 100%;
-}
-
-.chat-input {
-    width: 100%;
-    font-size: 15px;
-    border: none;
-    outline: none;
-}
-
-.messages-container {
-    display: flex;
-    flex-direction: column-reverse;
-    height: 100%;
-    background: #e5ddd6;
-    overflow-y: scroll;
-}
-
-.sendedMessageContainer {
-    display: flex;
-    margin: 5px 15px;
-    justify-content: flex-end;
-}
-
-.recievedMessageContainer {
-    display: flex;
-    margin: 5px 15px;
-    justify-content: flex-start;
-}
-
-.messageDiv {
-    display: flex;
-    margin: 5px 15px;
-    justify-content: flex-start;
-}
-
-.message {
-    max-width: 50%;
-    font-size: 14px;
-    background: #daf8cb;
-    color: #303030;
-    padding: 8px 10px;
-    border-radius: 5px;
-    word-break: break-all;
-}
-
-/* EMPTY CHAT COMPONENT CSS */
-
-.emptyChat-container {
-    display: flex;
-    flex-direction: column;
-    flex: 3;
-    height: 100%;
-    background-color: #d4dee9;
-    justify-content: center;
-    align-items: center;
-}
-
-.startChat-div {
-    display: flex;
-    background-color: #4ae2fb;
-    width: 260px;
-    height: 30px;
-    border-radius: 50px;
-    justify-content: center;
-    align-items: center;
-    font-size: 15px;
-}
-
-.newMessage-false {
-    display: none;
-}
-
-.msgDetails-Container {
-    display: flex;
-    justify-content: flex-end;
-    margin: 4px -6px -4px 12px;
-}
-
-.sended-time {
-    display: flex;
-    justify-content: flex-end;
-    color: #83a7a5;
-    margin-right: 3px;
-    font-size: 11px;
-}
-
-.tick {
-    display: flex;
-}
-
-.clock {
-    height: 14px;
-}
-
-.single-tick {
-    height: 12px;
-    width: 11px;
-}
-
-/* DROP DOWN */
+/* dropdown of chat header */
 
 .dropdown-container {
     display: flex;
@@ -256,3 +165,107 @@
     max-height: 100vh;
     transition: 0.2s;
 }
+
+/* 2.DISPLAY MESSAGES */
+
+.Messages-Container {
+    display: flex;
+    flex-direction: column-reverse;
+    height: 100%;
+    background: #e5ddd6;
+    overflow-y: scroll;
+}
+
+/* message component */
+
+.Sended-Message {
+    display: flex;
+    margin: 5px 15px;
+    justify-content: flex-end;
+}
+
+.Recieved-Message {
+    display: flex;
+    margin: 5px 15px;
+    justify-content: flex-start;
+}
+
+.Message-div {
+    max-width: 50%;
+    font-size: 14px;
+    background: #daf8cb;
+    color: #303030;
+    padding: 8px 10px;
+    border-radius: 5px;
+    word-break: break-all;
+}
+
+.Message-Details {
+    display: flex;
+    justify-content: flex-end;
+    margin: 4px -6px -4px 12px;
+}
+
+.Message-Details .sended-time {
+    display: flex;
+    justify-content: flex-end;
+    color: #83a7a5;
+    margin-right: 3px;
+    font-size: 11px;
+}
+
+.Message-Details .tick-mark {
+    display: flex;
+}
+
+.clock {
+    height: 14px;
+}
+
+.single-tick {
+    height: 12px;
+    width: 11px;
+}
+
+/* 3.INPUTBOX COMPONENT*/
+
+.Input-Box {
+    display: flex;
+    flex-direction: row;
+    background-color: #f0f0f0;
+    padding: 10px;
+    margin-top: auto;
+    height: 40px;
+}
+
+.inputfield-container {
+    display: flex;
+    flex-direction: row;
+    background-color: white;
+    width: 100%;
+    border-radius: 16px;
+    padding: 7px 10px 8px 8px;
+}
+
+.Input-Box form {
+    width: 100%;
+}
+
+.Chat-Inupt {
+    width: 100%;
+    font-size: 15px;
+    border: none;
+    outline: none;
+}
+
+
+
+
+
+
+
+
+
+
+/* DROP DOWN */
+

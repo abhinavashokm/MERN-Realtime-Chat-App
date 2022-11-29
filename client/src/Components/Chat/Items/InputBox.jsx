@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import InputField from '../../InputField/InputField'
 import { currentChatContext } from '../../../Store/CurrentChat'
 import { chatHelper } from '../../../Helpers/ChatHelper'
@@ -39,16 +39,23 @@ function InputBox({ props }) {
         }
     }
 
+    useEffect(() => {
+        if(currentChat) {
+            setMessage("")
+        }
+    }, [currentChat])
+    
+
     return (
-        <div className="chatBox">
-            <div className="chatbox-container">
+        <div className="Input-Box">
+            <div className="inputfield-container">
                 <form onSubmit={messageSubmitHelper} >
                     <InputField
                         type="text"
                         value={message}
                         name="message"
                         placeholder="type something..."
-                        className="chat-input"
+                        className="Chat-Inupt"
                         onChangeFunction={setMessage}
                     />
                 </form>

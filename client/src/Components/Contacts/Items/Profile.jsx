@@ -12,8 +12,8 @@ function Profile() {
       }
 
     return (
-        <div className="profileBand">
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRA7ECizMinUV4oPQG6BUFIZZmeXehbj7pytQ&usqp=CAU" alt="person" />
+        <div className="Profile">
+            <img src="Images/user.png" alt="person" />
             {user && <span>{user.FullName}</span>}
             <button onClick={logoutHelper} >Logout</button>
         </div>

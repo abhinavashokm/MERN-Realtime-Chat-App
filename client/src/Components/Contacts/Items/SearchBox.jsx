@@ -6,12 +6,12 @@ function SearchBox({props}) {
     const { setSearch } = props
 
     return (
-        <div className="contacts-searchBox">
+        <div className="SearchBox">
             <InputField
                 type="search"
                 name="search"
                 placeholder="Search..."
-                className="search"
+                className="inputField"
                 onChangeFunction={setSearch}
             />
         </div>

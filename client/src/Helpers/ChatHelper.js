@@ -86,6 +86,15 @@ export const ChatHelperProvider = ({ children }) => {
             }
         })
     }
+    const messageSeenedUpdate = (contactId) => {
+        chats.forEach(element => {
+            if (element.isYours && element.recieverId === contactId) {
+                element.seen = true
+            }
+            return element
+        })
+        setChats(chats)
+    }
     const sendPendingMessage = (messageObj) => {
         return new Promise((resolve) => {
             socket.current.emit("sendMessage", {
@@ -141,16 +150,6 @@ export const ChatHelperProvider = ({ children }) => {
             }
         })
 
-    }
-
-    const updateMessageSeen = (contactId) => {
-        chats.forEach(element => {
-            if (element.isYours && element.recieverId === contactId) {
-                element.seen = true
-            }
-            return element
-        })
-        setChats(chats)
     }
 
     const setOnlineStatusHelper = (onlineList, setOnlineStatus) => {
@@ -212,7 +211,7 @@ export const ChatHelperProvider = ({ children }) => {
     return (
         <chatHelper.Provider value={{
             sendMessage, recieveMessage, setOnlineStatusHelper, actionsWhenNewMessage,
-            removeChat, blockChat, unblockChat, updateMessageSeen, removeViewedUnreadMessages,
+            removeChat, blockChat, unblockChat, messageSeenedUpdate, removeViewedUnreadMessages,
             sendPendingMessagesHelper, addToPendingMessages, isAlreadyInContactList
         }} >
             {children}
