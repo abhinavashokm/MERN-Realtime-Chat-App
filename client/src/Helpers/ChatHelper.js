@@ -208,6 +208,7 @@ export const ChatHelperProvider = ({ children }) => {
         })
     }
 
+    
     return (
         <chatHelper.Provider value={{
             sendMessage, recieveMessage, setOnlineStatusHelper, actionsWhenNewMessage,

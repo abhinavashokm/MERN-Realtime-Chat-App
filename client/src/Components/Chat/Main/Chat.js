@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { io } from 'socket.io-client';
-import { authContext } from '../../Auth/AuthContext';
-import { currentChatContext } from '../../Store/CurrentChat';
-import { unreadMessagesContext } from '../../Store/UnreadMessages';
-import { contactListContext } from '../../Store/ContactList';
-import { chatsContext } from '../../Store/ChatsContext';
-import { chatHelper } from '../../Helpers/ChatHelper';
-import { addToContactList } from '../../Helpers/HelperFunctions';
-import ChatBox from './Conditional/ChatBox';
-import EmptyChat from './Conditional/EmptyChat';
-import "./Chat.css"
+import { authContext } from '../../../Auth/AuthContext';
+import { currentChatContext } from '../../../Store/CurrentChat';
+import { unreadMessagesContext } from '../../../Store/UnreadMessages';
+import { contactListContext } from '../../../Store/ContactList';
+import { chatsContext } from '../../../Store/ChatsContext';
+import { chatHelper } from '../../../Helpers/ChatHelper';
+import { addToContactList } from '../../../Helpers/HelperFunctions';
+import ChatBox from '../Conditional/ChatBox';
+import EmptyChat from '../Conditional/EmptyChat';
+import "../Chat.css"
 
 function Chat() {
 

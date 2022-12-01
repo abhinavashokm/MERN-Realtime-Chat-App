@@ -1,7 +1,7 @@
 import React, { useEffect, useContext} from 'react'
 import { useNavigate } from 'react-router-dom'
-import Contacts from '../../Components/Contacts/Contacts'
-import Chat from '../../Components/Chat/Chat'
+import Contacts from '../../Components/Contacts/Main/Contacts'
+import Chat from '../../Components/Chat/Main/Chat'
 import { authContext } from '../../Auth/AuthContext'
 import './home.css'
 

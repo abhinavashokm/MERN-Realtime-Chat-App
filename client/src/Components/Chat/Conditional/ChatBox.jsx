@@ -19,7 +19,10 @@ function ChatBox({ props }) {
 
     //for setting current chatting persons online status
     useEffect(() => {
-        currentChat && setOnlineStatusHelper(onlineList, setOnlineStatus)
+        if (currentChat) {
+            setOnlineStatusHelper(onlineList, setOnlineStatus)
+            removeViewedUnreadMessages(currentChat._id)
+        }
     }, [currentChat, onlineList])
 
     return (
@@ -31,9 +34,6 @@ function ChatBox({ props }) {
                 {
                     currentChat && [...chats].reverse().filter(message => message.senderId === currentChat._id || message.recieverId === currentChat._id)
                         .map((obj, index) => {
-
-                            removeViewedUnreadMessages(obj.senderId)
-
                             return (
                                 <Message key={index} messageObj={obj} />
                             )

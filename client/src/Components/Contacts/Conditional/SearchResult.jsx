@@ -3,11 +3,12 @@ import { currentChatContext } from '../../../Store/CurrentChat'
 import { authContext } from '../../../Auth/AuthContext'
 import { getAllUsers } from '../../../Helpers/HelperFunctions'
 import { checkSelectedChat } from '../../../Helpers/HelperFunctions'
+import ContactSuggestion from '../Items/ContactSuggestion'
 
 function SearchResult({ props }) {
 
     const { search } = props
-    const { setCurrentChat, currentChat } = useContext(currentChatContext)
+    const { currentChat } = useContext(currentChatContext)
     const { user } = useContext(authContext)
 
     const [allUsers, setAllUsers] = useState([])
@@ -27,25 +28,7 @@ function SearchResult({ props }) {
                         const selectedSearchItem = currentChat && checkSelectedChat(contact._id, currentChat._id)
 
                         return (
-                            <div
-                                key={index}
-                                onClick={() => {
-                                    setCurrentChat(contact)
-                                }}
-                                className={selectedSearchItem ? "Suggestion-Contact-Selected" : "Suggestion-Contact"}
-                            >
-                                {
-                                    selectedSearchItem ?
-                                        <img className='suggestion-contact-avatar-img' src="Images/selected-contact-avatar.png" alt="person" />
-                                        :
-                                        <img className='suggestion-contact-avatar-img' src="Images/contact-avatar.png" alt="person" />
-                                }
-
-                                <div className='Suggestion-Details-Container' >
-                                    <span className='Suggestion-Name'>{contact.FullName}</span>
-                                    <span className='Suggestion-UserName' >{contact.UserName}</span>
-                                </div>
-                            </div>
+                            <ContactSuggestion props={{ index, contact, selectedSearchItem }} key={index} />
                         )
                     })
             }
