@@ -23,6 +23,7 @@ function Chat() {
   const [onlineList, setOnlineList] = useState()
   const [messageViewedContact, setMessageViewedContact] = useState()
   const [pendingMessages, setPendingMessages] = useState([])
+  const [arrivalMessage, setArrivalMessage] = useState(null)
 
   useEffect(() => {
     if (user) {
@@ -38,9 +39,7 @@ function Chat() {
       })
 
       socket.current.on("recieveMessage", (msgDetails) => {
-
-        recieveMessage(msgDetails, setChats, setUnreadMessages)
-
+        setArrivalMessage(msgDetails)
       })
 
       socket.current.on("messageViewedResponce", (senderId) => {
@@ -50,6 +49,10 @@ function Chat() {
     }
   }, [user, currentChat, socket])
 
+  useEffect(() => {
+    arrivalMessage &&  recieveMessage(arrivalMessage, setChats, setUnreadMessages)
+  }, [arrivalMessage])
+  
   useEffect(() => {
     if (messageViewedContact) {
       messageSeenedUpdate(messageViewedContact)

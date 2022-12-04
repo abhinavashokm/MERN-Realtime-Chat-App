@@ -3,13 +3,16 @@ import { currentChatContext } from '../../../Store/CurrentChat'
 import { contactListContext } from '../../../Store/ContactList'
 import { chatHelper } from '../../../Helpers/ChatHelper'
 import { isBlockedContact } from '../../../Helpers/HelperFunctions'
+import { useMediaQuery } from 'react-responsive'
 
 function Header({ props }) {
 
+    const isTabletOrMobile = useMediaQuery({ query: '(max-width: 576px)' })
+
     const { onlineStatus, blocked, setBlocked } = props
-    const { currentChat } = useContext(currentChatContext)
+    const { currentChat, setCurrentChat } = useContext(currentChatContext)
     const { removeChat, blockChat, unblockChat, isAlreadyInContactList } = useContext(chatHelper)
-    const { contactsList, blockedList } = useContext(contactListContext)
+    const { blockedList } = useContext(contactListContext)
     const [alreadyInChat, setAlreadyInChat] = useState(false)
 
     const removeChatHelper = () => {
@@ -34,12 +37,19 @@ function Header({ props }) {
         })
     }, [alreadyInChat, currentChat, blocked])
 
-
+    const backToContactsHelper = () => {
+        setCurrentChat(null)
+    }
 
     return (
         <div className="chat-header">
+            {isTabletOrMobile &&
+                <div onClick={backToContactsHelper} className='back-button'>
+                    <img src="Images/left-arrow.png" alt="" />
+                </div>
+            }
 
-            <div className="chat-details">
+            <div className={isTabletOrMobile ? "chat-details-Mobile" : "chat-details-Desktop"}>
                 {currentChat && <span className='person-name'>{currentChat.FullName}</span>}
                 {blocked ?
 
