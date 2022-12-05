@@ -4,11 +4,12 @@ import { useNavigate } from 'react-router-dom'
 import { authContext } from '../../Auth/AuthContext'
 import { authHelpers } from '../../Auth/AuthHelpers'
 import InputField from '../InputField/InputField'
+import { io } from 'socket.io-client';
 
 
 function Login() {
   const navigate = useNavigate()
-  const { setUser } = useContext(authContext)
+  const { setUser, socket } = useContext(authContext)
   const { login } = useContext(authHelpers)
 
   const [UserName, setUserName] = useState("")
@@ -20,6 +21,13 @@ function Login() {
     login(UserName, Password).then((userDetails) => {
       setLoginErrorMsg("")
       setUser(userDetails)
+
+      // make connection to socket.io
+      socket.current = io("http://localhost:3001")
+
+      // add the user to online list
+      socket.current.emit("addUser", userDetails._id)
+
       navigate('/')
     }).catch((errMsg) => {
       setLoginErrorMsg(errMsg)

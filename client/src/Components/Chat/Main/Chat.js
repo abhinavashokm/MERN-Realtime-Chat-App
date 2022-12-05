@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { io } from 'socket.io-client';
 import { authContext } from '../../../Auth/AuthContext';
 import { currentChatContext } from '../../../Store/CurrentChat';
 import { unreadMessagesContext } from '../../../Store/UnreadMessages';
 import { contactListContext } from '../../../Store/ContactList';
 import { chatsContext } from '../../../Store/ChatsContext';
 import { chatHelper } from '../../../Helpers/ChatHelper';
-import { addToContactList } from '../../../Helpers/HelperFunctions';
+import { addToContactList, findOneUser } from '../../../Helpers/HelperFunctions';
 import ChatBox from '../Conditional/ChatBox';
 import EmptyChat from '../Conditional/EmptyChat';
 import "../Chat.css"
@@ -14,7 +13,7 @@ import "../Chat.css"
 function Chat() {
 
   const { user, socket } = useContext(authContext)
-  const { currentChat } = useContext(currentChatContext)
+  const { currentChat, setCurrentChat } = useContext(currentChatContext)
   const { setUnreadMessages } = useContext(unreadMessagesContext)
   const { setContactsList } = useContext(contactListContext)
   const { sendMessage, recieveMessage, messageSeenedUpdate, sendPendingMessagesHelper, addToPendingMessages, isAlreadyInContactList } = useContext(chatHelper)
@@ -27,13 +26,6 @@ function Chat() {
 
   useEffect(() => {
     if (user) {
-
-      // make connection to socket.io
-      socket.current = io("http://localhost:3001")
-
-      // add the user to online list
-      socket.current.emit("addUser", user._id)
-
       socket.current.on("onlineUsersList", (onlineUsers) => {
         setOnlineList(onlineUsers)
       })
@@ -46,13 +38,24 @@ function Chat() {
         setMessageViewedContact(senderId)
       })
 
+      //update online users list
+      socket.current.on("usersChange", (users) => {
+        setOnlineList(users)
+      })
+
     }
   }, [user, currentChat, socket])
 
   useEffect(() => {
-    arrivalMessage &&  recieveMessage(arrivalMessage, setChats, setUnreadMessages)
+    arrivalMessage && recieveMessage(arrivalMessage, setChats, setUnreadMessages)
   }, [arrivalMessage])
-  
+
+  useEffect(() => {
+    currentChat && findOneUser(currentChat._id).then((user) => {
+      setCurrentChat(user)
+    })
+  }, [onlineList])
+
   useEffect(() => {
     if (messageViewedContact) {
       messageSeenedUpdate(messageViewedContact)
@@ -67,11 +70,6 @@ function Chat() {
     }
   }, [onlineList])
 
-
-  //update online users list
-  socket.current && socket.current.on("usersChange", (users) => {
-    setOnlineList(users)
-  })
 
   //this fucnction for sending private message
   const handleMessageSubmit = async ({ message, setMessage }) => {
