@@ -81,7 +81,7 @@ export const ChatHelperProvider = ({ children }) => {
     }
     const messageDeliverdUpdate = (contactId) => {
         chats.forEach((element) => {
-            if (element.recieverId === contactId) {
+            if (element.recieverId === contactId && element.seen !== true) {
                 element.seen = "deliverd"
             }
         })
@@ -207,7 +207,6 @@ export const ChatHelperProvider = ({ children }) => {
             })
         })
     }
-
     
     return (
         <chatHelper.Provider value={{
