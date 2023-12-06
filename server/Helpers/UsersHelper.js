@@ -4,7 +4,7 @@ const ContactListModel = require('../Models/ContactList')
 //LIST OF SOCKET CONNECTED USERS
 let users = []
 
-//FOR GET CURRENT TIME
+//FOR OBTAIN CURRENT TIME
 const getCurrentTime = () => {
     const date = new Date()
     let hours = ("0" + date.getHours()).slice(-2)
